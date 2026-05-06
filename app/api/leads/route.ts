@@ -23,8 +23,14 @@ export async function POST(request: Request) {
     const body = leadSchema.parse(await request.json());
     const challenge = challengeByLocale[body.locale as Locale];
 
-    if (challenge.slug !== body.challengeSlug) {
-      return NextResponse.json({ error: "Invalid challenge" }, { status: 400 });
+    if (!challenge || challenge.slug !== body.challengeSlug) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Invalid challenge"
+        },
+        { status: 400 }
+      );
     }
 
     const token = createConfirmationToken();
@@ -49,23 +55,43 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error(error);
-      return NextResponse.json({ error: "Could not save lead" }, { status: 500 });
+      console.error("Supabase lead insert error:", error);
+
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Could not save lead"
+        },
+        { status: 500 }
+      );
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     const confirmationUrl = `${siteUrl}/${body.locale}/confirmar?token=${token}`;
 
-    await sendLeadConfirmationEmail({
-      email: body.email,
-      fullName: body.fullName,
-      locale: body.locale,
-      confirmationUrl
-    });
+    try {
+      await sendLeadConfirmationEmail({
+        email: body.email,
+        fullName: body.fullName,
+        locale: body.locale,
+        confirmationUrl
+      });
+    } catch (emailError) {
+      console.error("Confirmation email error:", emailError);
+    }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true
+    });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    console.error("Lead request error:", error);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Invalid request"
+      },
+      { status: 400 }
+    );
   }
 }
