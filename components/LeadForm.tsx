@@ -47,7 +47,7 @@ export function LeadForm({ copy }: LeadFormProps) {
 
       const result = await response.json().catch(() => null);
 
-      if (!response.ok || result?.error) {
+      if (!response.ok || result?.ok !== true) {
         throw new Error(result?.error || "Request failed");
       }
 
