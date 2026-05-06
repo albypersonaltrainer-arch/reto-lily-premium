@@ -7,8 +7,30 @@ import { Countdown } from "@/components/Countdown";
 import { LeadForm } from "@/components/LeadForm";
 import { VideoGate } from "@/components/VideoGate";
 
+function WhatsAppIcon() {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      aria-hidden="true"
+      className="h-8 w-8"
+      fill="currentColor"
+    >
+      <path d="M16.02 3.2C8.96 3.2 3.22 8.86 3.22 15.81c0 2.23.6 4.4 1.74 6.31L3.1 28.8l6.93-1.8a12.97 12.97 0 0 0 5.99 1.5c7.06 0 12.8-5.65 12.8-12.6S23.08 3.2 16.02 3.2Zm0 23.15c-1.9 0-3.76-.5-5.39-1.45l-.39-.23-4.12 1.07 1.1-3.9-.26-.4a10.31 10.31 0 0 1-1.6-5.53c0-5.77 4.78-10.46 10.66-10.46 5.87 0 10.65 4.69 10.65 10.46 0 5.76-4.78 10.44-10.65 10.44Zm5.84-7.82c-.32-.16-1.89-.92-2.18-1.02-.3-.1-.51-.16-.72.16-.21.31-.82 1.02-1.01 1.23-.18.2-.37.23-.69.08-.32-.16-1.34-.49-2.56-1.55-.95-.83-1.59-1.85-1.78-2.16-.18-.32-.02-.49.14-.64.14-.14.32-.36.48-.54.16-.18.21-.31.32-.52.1-.2.05-.39-.03-.54-.08-.16-.72-1.7-.99-2.33-.26-.62-.52-.53-.72-.54h-.61c-.21 0-.55.08-.84.39-.29.31-1.1 1.06-1.1 2.59s1.13 3.01 1.29 3.22c.16.2 2.23 3.35 5.4 4.7.75.32 1.34.51 1.8.65.76.24 1.44.21 1.98.13.6-.09 1.89-.76 2.16-1.49.27-.73.27-1.35.19-1.49-.08-.13-.29-.21-.61-.36Z" />
+    </svg>
+  );
+}
+
 export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
   const [unlocked, setUnlocked] = useState(false);
+
+  const accessUnlockedLabel =
+    copy.locale === "es" ? "Acceso desbloqueado" : "Access unlocked";
+
+  const postVideoLabel =
+    copy.locale === "es" ? "Mensaje post-vídeo" : "Post-video message";
+
+  const chooseContributionLabel =
+    copy.locale === "es" ? "Elegir aportación" : "Choose contribution";
 
   return (
     <div className="invisible-pattern-shell">
@@ -103,13 +125,11 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           <div className="mx-auto max-w-4xl text-center">
             <div
               className={`glass-panel pattern-card rounded-xl border-champagne/30 p-8 transition duration-700 md:p-14 ${
-                unlocked
-                  ? "translate-y-0 opacity-100 shadow-glow"
-                  : "translate-y-3 opacity-55"
+                unlocked ? "translate-y-0 opacity-100 shadow-glow" : "translate-y-3 opacity-60"
               }`}
             >
               <p className="mb-5 text-xs font-bold uppercase tracking-[0.28em] text-champagne">
-                {unlocked ? "Acceso desbloqueado" : "Mensaje post-vídeo"}
+                {unlocked ? accessUnlockedLabel : postVideoLabel}
               </p>
 
               <h3 className="text-glow font-serif text-4xl leading-tight text-champagne md:text-5xl">
@@ -223,7 +243,7 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                     {option.label}
                   </div>
                   <div className="mt-7 text-[11px] font-bold uppercase tracking-[0.22em] text-champagne/80">
-                    Elegir aportación
+                    {chooseContributionLabel}
                   </div>
                 </a>
               ))}
@@ -255,20 +275,8 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </div>
         </section>
 
-        <section id="solicita-acceso" className="px-6 py-20 md:py-28">
+        <section id="solicita-acceso" className="scroll-mt-28 px-6 py-20 md:py-28">
           <div className="mx-auto max-w-4xl">
-            <div className="mb-10 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.32em] text-champagne">
-                Acceso al reto
-              </p>
-              <h2 className="mt-5 font-serif text-5xl leading-tight text-linen md:text-7xl">
-                {copy.form.title}
-              </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted">
-                {copy.form.text}
-              </p>
-            </div>
-
             <LeadForm copy={copy} />
           </div>
         </section>
@@ -307,8 +315,8 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
         <section className="px-6 py-20 md:py-28">
           <div className="mx-auto max-w-3xl">
             <div className="glass-panel pattern-card rounded-xl p-8 text-center md:p-12">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-3xl">
-                ☎
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-champagne">
+                <WhatsAppIcon />
               </div>
 
               <h2 className="font-serif text-4xl text-linen md:text-5xl">
