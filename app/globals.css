@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #16130b;
+}
+
+body {
+  min-height: 100vh;
+  background: #16130b;
+  color: #eae1d4;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(242, 202, 80, 0.35);
+  color: #fff7dc;
+}
+
+.invisible-pattern-shell {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.10), transparent 34rem),
+    radial-gradient(circle at 9% 22%, rgba(228, 191, 175, 0.10), transparent 25rem),
+    radial-gradient(circle at 92% 14%, rgba(207, 208, 184, 0.07), transparent 28rem),
+    linear-gradient(180deg, #16130b 0%, #110e07 42%, #16130b 100%);
+}
+
+.invisible-pattern-shell::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -3;
+  pointer-events: none;
+  opacity: 0.19;
+  background-image:
+    repeating-radial-gradient(ellipse at 52% 42%, rgba(242, 202, 80, 0.22) 0 1px, transparent 1px 22px),
+    radial-gradient(circle at 66% 30%, rgba(228, 191, 175, 0.16), transparent 26rem),
+    radial-gradient(circle at 35% 68%, rgba(242, 202, 80, 0.11), transparent 30rem);
+  filter: blur(0.35px);
+  transform: rotate(-9deg) scale(1.06);
+  mask-image: radial-gradient(circle at 50% 22%, black 0%, rgba(0,0,0,.84) 28%, transparent 78%);
+}
+
+.invisible-pattern-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.28;
+  background-image:
+    linear-gradient(115deg, transparent 0 9%, rgba(255,255,255,0.030) 9.5%, transparent 10.2% 21%, rgba(255,255,255,0.025) 21.4%, transparent 22.2% 100%),
+    radial-gradient(circle at 50% 50%, transparent 0, rgba(0,0,0,.24) 70%);
+  mix-blend-mode: overlay;
+}
+
+.luxury-noise {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+.glass-panel {
+  background: rgba(56, 52, 43, 0.42);
+  backdrop-filter: blur(22px);
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  border-left: 1px solid rgba(255, 255, 255, 0.11);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+  border-right: 1px solid rgba(255, 255, 255, 0.035);
+  box-shadow: 0 24px 100px rgba(0,0,0,.28);
+}
+
+.text-glow {
+  text-shadow: 0 0 24px rgba(212, 175, 55, 0.38);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 24px rgba(212, 175, 55, 0.34);
+}
+
+.radial-pool {
+  position: relative;
+}
+
+.radial-pool::before {
+  content: "";
+  position: absolute;
+  inset: 8% 10%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle at center, rgba(212, 175, 55, 0.055), transparent 68%);
+}
+
+.pattern-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.pattern-card::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  opacity: .18;
+  background-image: repeating-linear-gradient(132deg, rgba(242,202,80,.20) 0 1px, transparent 1px 24px);
+  transform: rotate(8deg);
+  mask-image: radial-gradient(circle at 44% 38%, black, transparent 68%);
+}
+
+.input-line {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(208, 197, 175, .38);
+  background: transparent;
+  color: #eae1d4;
+  padding: 0.8rem 0;
+  outline: none;
+}
+
+.input-line::placeholder {
+  color: rgba(208, 197, 175, .58);
+}
+
+.input-line:focus {
+  border-bottom-color: #f2ca50;
+}
