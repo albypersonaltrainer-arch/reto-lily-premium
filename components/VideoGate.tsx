@@ -1,80 +1,135 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type VideoGateProps = {
   url: string;
   placeholderText: string;
   lockedText: string;
+  unlockLabel: string;
   unlockAfterSeconds: number;
   onUnlocked: () => void;
 };
 
-export function VideoGate({ url, placeholderText, lockedText, unlockAfterSeconds, onUnlocked }: VideoGateProps) {
-  const [secondsWatched, setSecondsWatched] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const unlockedRef = useRef(false);
+function formatTime(totalSeconds: number) {
+  const safeSeconds = Math.max(0, totalSeconds);
+  const minutes = Math.floor(safeSeconds / 60);
+  const seconds = safeSeconds % 60;
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function getEmbedUrl(url: string) {
+  if (!url) return "";
+
+  try {
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.hostname.includes("youtube.com")) {
+      const videoId = parsedUrl.searchParams.get("v");
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      const videoId = parsedUrl.pathname.replace("/", "");
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (parsedUrl.hostname.includes("vimeo.com")) {
+      const videoId = parsedUrl.pathname.split("/").filter(Boolean).pop();
+      if (videoId) return `https://player.vimeo.com/video/${videoId}`;
+    }
+
+    return url;
+  } catch {
+    return url;
+  }
+}
+
+export function VideoGate({
+  url,
+  placeholderText,
+  lockedText,
+  unlockLabel,
+  unlockAfterSeconds,
+  onUnlocked
+}: VideoGateProps) {
+  const [remainingSeconds, setRemainingSeconds] = useState(unlockAfterSeconds);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const hasUnlockedRef = useRef(false);
+
+  const embedUrl = useMemo(() => getEmbedUrl(url), [url]);
 
   useEffect(() => {
-    if (!isPlaying || unlockedRef.current) return;
+    if (hasUnlockedRef.current) return;
 
-    const timer = window.setInterval(() => {
-      setSecondsWatched((current) => {
-        const next = current + 1;
-        if (next >= unlockAfterSeconds && !unlockedRef.current) {
-          unlockedRef.current = true;
-          onUnlocked();
+    const interval = window.setInterval(() => {
+      setRemainingSeconds((current) => {
+        if (current <= 1) {
+          window.clearInterval(interval);
+
+          if (!hasUnlockedRef.current) {
+            hasUnlockedRef.current = true;
+            setIsUnlocked(true);
+            onUnlocked();
+          }
+
+          return 0;
         }
-        return next;
+
+        return current - 1;
       });
     }, 1000);
 
-    return () => window.clearInterval(timer);
-  }, [isPlaying, onUnlocked, unlockAfterSeconds]);
-
-  const progress = Math.min(100, Math.round((secondsWatched / unlockAfterSeconds) * 100));
+    return () => window.clearInterval(interval);
+  }, [onUnlocked]);
 
   return (
-    <div className="w-full max-w-4xl">
-      <button
-        type="button"
-        onClick={() => setIsPlaying(true)}
-        className="group relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-charcoal/70 text-left shadow-soft outline-none transition duration-700 hover:border-champagne/40"
-        aria-label="Reproducir vídeo"
-      >
-        {url ? (
-          <iframe
-            src={url}
-            title={placeholderText}
-            className="absolute inset-0 h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(242,202,80,.18),transparent_34%),linear-gradient(135deg,rgba(228,191,175,.16),transparent_38%),#1f1b13]" />
-        )}
+    <div className="w-full max-w-5xl">
+      <div className="relative overflow-hidden rounded-[2rem] border border-champagne/25 bg-black/45 p-3 shadow-soft">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,215,123,0.16),transparent_42%)]" />
 
-        {!url && (
-          <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-champagne/70 bg-surface/45 text-champagne backdrop-blur-md transition duration-500 group-hover:scale-105 group-hover:shadow-glow">
-              <span className="ml-1 text-5xl">▶</span>
-            </div>
-            <div>
-              <p className="font-serif text-2xl text-linen">{placeholderText}</p>
-              <p className="mt-2 text-sm uppercase tracking-[0.28em] text-muted/70">Click para simular reproducción</p>
-            </div>
-          </div>
-        )}
-      </button>
+        <div className="relative aspect-video overflow-hidden rounded-[1.45rem] border border-white/10 bg-obsidian">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              title={placeholderText}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center px-8 text-center">
+              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-4xl text-champagne shadow-glow">
+                ▶
+              </div>
 
-      <div className="mt-6 h-px w-full overflow-hidden rounded-full bg-white/10">
-        <div className="h-full bg-gradient-to-r from-rose to-champagne transition-all duration-700" style={{ width: `${progress}%` }} />
+              <p className="font-serif text-3xl text-linen md:text-5xl">
+                {placeholderText}
+              </p>
+
+              <p className="mt-5 max-w-xl text-base leading-7 text-muted">
+                Aquí irá el vídeo real de Lily antes del lanzamiento.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-outline/70 px-5 py-3 text-xs uppercase tracking-[0.22em] text-muted/75">
-        <span>{progress >= 100 ? "Desbloqueado" : "Bloqueado"}</span>
-        <span className="h-1 w-1 rounded-full bg-champagne/70" />
-        <span>{lockedText}</span>
+      <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-champagne/25 bg-champagne/5 px-6 py-6 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-champagne">
+          {isUnlocked ? "Acceso desbloqueado" : unlockLabel}
+        </p>
+
+        <div className="mt-4 font-serif text-5xl leading-none text-linen md:text-6xl">
+          {formatTime(remainingSeconds)}
+        </div>
+
+        <p className="mt-4 text-sm leading-7 text-muted">
+          {isUnlocked
+            ? "Ya puedes solicitar tu acceso al reto."
+            : lockedText}
+        </p>
       </div>
     </div>
   );
