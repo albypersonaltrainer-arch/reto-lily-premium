@@ -136,7 +136,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
-        sumup: "https://sumup.com/"
+        sumup: "https://pay.sumup.com/b2c/XA39W0D4C0"
       }
     },
     learn: {
@@ -178,7 +178,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       title: "¿Tienes dudas antes de entrar?",
       text: "Escríbenos por WhatsApp y te respondemos directo.",
       cta: "Hablar por WhatsApp",
-      url: "https://wa.me/34000000000"
+      url: "https://wa.me/34686638097"
     },
     final: {
       title: "Esto no es para todo el mundo.",
@@ -242,7 +242,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
-        sumup: "https://sumup.com/"
+        sumup: "https://pay.sumup.com/b2c/XA39W0D4C0"
       }
     },
     learn: {
@@ -283,7 +283,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       title: "Questions before joining?",
       text: "Message us on WhatsApp and we will reply directly.",
       cta: "Talk on WhatsApp",
-      url: "https://wa.me/34000000000"
+      url: "https://wa.me/34686638097"
     },
     final: {
       title: "This is not for everyone.",
