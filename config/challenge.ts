@@ -5,6 +5,7 @@ export type ChallengeCopy = {
   slug: string;
   oppositeLocalePath: string;
   brand: string;
+  brandLogo: string;
   navCta: string;
   hero: {
     eyebrow: string;
@@ -17,7 +18,15 @@ export type ChallengeCopy = {
     placeholderText: string;
     helper: string;
     locked: string;
+    unlockLabel: string;
     unlockAfterSeconds: number;
+  };
+  coach: {
+    title: string;
+    name: string;
+    subtitle: string;
+    text: string;
+    image: string;
   };
   unlock: {
     title: string;
@@ -30,6 +39,7 @@ export type ChallengeCopy = {
     title: string;
     text: string;
     deadlineIso: string;
+    urgencyMinutes: number;
   };
   donation: {
     title: string;
@@ -90,14 +100,14 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     locale: "es",
     slug: "reto-dinero",
     oppositeLocalePath: "/en/money-challenge",
-    brand: "Elimina",
-    navCta: "Empieza ahora",
+    brand: "Lily Camarena",
+    brandLogo: "/lily-camarena-logo.png",
+    navCta: "Solicita tu acceso",
     hero: {
-      eyebrow: "Reto de 3 días",
+      eyebrow: "RETO DE 3 DÍAS",
       title: "Elimina lo que bloquea tu dinero en 3 días",
       subtitle: "Deja de intentar manifestar más y entiende por qué lo estás frenando.",
-      intro:
-        "Hay un patrón invisible que se repite en tu vida. No es falta de esfuerzo, no es falta de conocimiento. Es una programación interna que puede estar sosteniendo tu relación con el dinero."
+      intro: ""
     },
     video: {
       url: "",
@@ -105,7 +115,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       helper:
         "Este vídeo dura menos de 10 minutos. Si de verdad quieres entender qué está pasando con tu dinero, míralo hasta el final.",
       locked: "El acceso al reto se desbloquea cuando termines el vídeo.",
-      unlockAfterSeconds: 480
+      unlockLabel: "El acceso al reto se desbloquea en:",
+      unlockAfterSeconds: 120
+    },
+    coach: {
+      title: "Tu coach",
+      name: "Lily Camarena",
+      subtitle: "Mente nueva, vida nueva",
+      text:
+        "Lily acompaña a mujeres que quieren dejar de repetir los mismos patrones internos y empezar a relacionarse con el dinero desde un lugar más claro, consciente y real.",
+      image: "/lily-camarena-logo.png"
     },
     unlock: {
       title: "Si has llegado hasta aquí, no es casualidad.",
@@ -115,14 +134,15 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
         "Esto es la respuesta que estabas buscando.",
         "Ahora tú decides si haces algo con ello… o sigues igual."
       ],
-      cta: "Donar",
+      cta: "Solicita tu acceso",
       note: "Si de verdad quieres que esto te sirva, no elijas desde la duda."
     },
     countdown: {
       label: "Acceso abierto por tiempo limitado",
       title: "Este acceso no va a estar abierto siempre.",
       text: "Puedes seguir dándole vueltas… o puedes empezar ahora.",
-      deadlineIso: "2026-12-31T23:59:59+01:00"
+      deadlineIso: "2026-12-31T23:59:59+01:00",
+      urgencyMinutes: 30
     },
     donation: {
       title: "Esto no es un precio.",
@@ -142,10 +162,10 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     learn: {
       title: "En estos 3 días vas a:",
       items: [
-        "Detectar el patrón que está bloqueando tu dinero",
-        "Entender cómo tu mente lo sostiene",
-        "Romper ese mecanismo desde la raíz",
-        "Empezar a generar desde otro lugar"
+        "Ver exactamente qué está bloqueando tu dinero ahora mismo",
+        "Entender por qué sigues en el mismo punto aunque hagas cosas",
+        "Cambiar la forma en la que te estás relacionando con el dinero de verdad, no en teoría",
+        "Salir con un punto claro desde el que empezar a generar distinto"
       ]
     },
     form: {
@@ -186,7 +206,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       cta: "Entrar al reto"
     },
     footer: {
-      legal: "© 2026 Elimina · Reto de transformación emocional",
+      legal: "© 2026 Lily Camarena · Reto de transformación emocional",
       privacy: "Privacidad",
       terms: "Términos",
       contact: "Contacto"
@@ -196,14 +216,14 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     locale: "en",
     slug: "money-challenge",
     oppositeLocalePath: "/es/reto-dinero",
-    brand: "Elimina",
-    navCta: "Start now",
+    brand: "Lily Camarena",
+    brandLogo: "/lily-camarena-logo.png",
+    navCta: "Request access",
     hero: {
-      eyebrow: "3-day challenge",
+      eyebrow: "3-DAY CHALLENGE",
       title: "Remove what blocks your money in 3 days",
       subtitle: "Stop trying to manifest more and understand why you may be holding it back.",
-      intro:
-        "There may be an invisible pattern repeating in your life. It is not about lack of effort or lack of knowledge. It is an inner program shaping the way you relate to money."
+      intro: ""
     },
     video: {
       url: "",
@@ -211,7 +231,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       helper:
         "This video is under 10 minutes. If you truly want to understand what is happening with your money, watch it until the end.",
       locked: "Access to the challenge unlocks when you finish the video.",
-      unlockAfterSeconds: 480
+      unlockLabel: "Access to the challenge unlocks in:",
+      unlockAfterSeconds: 120
+    },
+    coach: {
+      title: "Your coach",
+      name: "Lily Camarena",
+      subtitle: "New mind, new life",
+      text:
+        "Lily supports women who want to stop repeating the same inner patterns and start relating to money from a clearer, more conscious and more grounded place.",
+      image: "/lily-camarena-logo.png"
     },
     unlock: {
       title: "If you made it this far, it is not random.",
@@ -221,14 +250,15 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
         "This is the answer you were looking for.",
         "Now you decide whether you act on it… or stay the same."
       ],
-      cta: "Donate",
+      cta: "Request access",
       note: "If you truly want this to serve you, do not choose from doubt."
     },
     countdown: {
       label: "Access open for a limited time",
       title: "This access will not stay open forever.",
       text: "You can keep overthinking it… or you can start now.",
-      deadlineIso: "2026-12-31T23:59:59+01:00"
+      deadlineIso: "2026-12-31T23:59:59+01:00",
+      urgencyMinutes: 30
     },
     donation: {
       title: "This is not a price.",
@@ -248,14 +278,14 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     learn: {
       title: "In these 3 days you will:",
       items: [
-        "Detect the pattern blocking your money",
-        "Understand how your mind keeps it in place",
-        "Break that mechanism from the root",
-        "Start creating from a different place"
+        "See exactly what is blocking your money right now",
+        "Understand why you remain in the same place even when you take action",
+        "Change the way you are relating to money for real, not just in theory",
+        "Leave with a clear starting point from which to begin creating differently"
       ]
     },
     form: {
-      title: "Request your access",
+      title: "Request your access to the challenge",
       text: "Leave your details so we can confirm your access and send the final instructions by email.",
       fullName: "Full name",
       email: "Email",
@@ -291,7 +321,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       cta: "Enter the challenge"
     },
     footer: {
-      legal: "© 2026 Elimina · Emotional transformation challenge",
+      legal: "© 2026 Lily Camarena · Emotional transformation challenge",
       privacy: "Privacy",
       terms: "Terms",
       contact: "Contact"
