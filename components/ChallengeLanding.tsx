@@ -52,15 +52,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
             </span>
           </a>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <a
-              href={copy.oppositeLocalePath}
-              className="text-xs font-bold uppercase tracking-[0.28em] text-champagne transition hover:text-linen"
-            >
-              ES / EN
-            </a>
-          </nav>
-
           <a
             href="#solicita-acceso"
             className="btn-glow rounded bg-gold px-5 py-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[#3c2f00] transition hover:bg-champagne"
