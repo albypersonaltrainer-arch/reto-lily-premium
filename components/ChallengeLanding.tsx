@@ -77,9 +77,9 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
               <Image
                 src={copy.brandLogo}
                 alt={copy.brand}
-                width={180}
-                height={180}
-                className="h-28 w-28 object-contain opacity-95 md:h-36 md:w-36"
+                width={260}
+                height={260}
+                className="h-40 w-40 object-contain opacity-95 md:h-56 md:w-56"
                 priority
               />
             </div>
