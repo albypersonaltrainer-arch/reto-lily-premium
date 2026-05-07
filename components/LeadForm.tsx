@@ -9,12 +9,56 @@ type LeadFormProps = {
 
 type FormStatus = "idle" | "loading" | "success" | "error";
 
+type CountryOption = {
+  country: string;
+  dialCode: string;
+};
+
+const COUNTRY_OPTIONS: CountryOption[] = [
+  { country: "España", dialCode: "+34" },
+  { country: "Estados Unidos", dialCode: "+1" },
+  { country: "Canadá", dialCode: "+1" },
+  { country: "México", dialCode: "+52" },
+  { country: "Colombia", dialCode: "+57" },
+  { country: "Argentina", dialCode: "+54" },
+  { country: "Chile", dialCode: "+56" },
+  { country: "Perú", dialCode: "+51" },
+  { country: "Ecuador", dialCode: "+593" },
+  { country: "Venezuela", dialCode: "+58" },
+  { country: "Uruguay", dialCode: "+598" },
+  { country: "Paraguay", dialCode: "+595" },
+  { country: "Bolivia", dialCode: "+591" },
+  { country: "Costa Rica", dialCode: "+506" },
+  { country: "Panamá", dialCode: "+507" },
+  { country: "República Dominicana", dialCode: "+1" },
+  { country: "Puerto Rico", dialCode: "+1" },
+  { country: "Reino Unido", dialCode: "+44" },
+  { country: "Portugal", dialCode: "+351" },
+  { country: "Francia", dialCode: "+33" },
+  { country: "Italia", dialCode: "+39" },
+  { country: "Alemania", dialCode: "+49" },
+  { country: "Otro", dialCode: "+" }
+];
+
 export function LeadForm({ copy }: LeadFormProps) {
   const firstDonationOption = copy.donation.options[0]?.amount || "7€";
 
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
+  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_OPTIONS[0].country);
+  const [selectedDialCode, setSelectedDialCode] = useState(COUNTRY_OPTIONS[0].dialCode);
+
+  function handleCountryChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const country = event.target.value;
+    const option = COUNTRY_OPTIONS.find((item) => item.country === country);
+
+    setSelectedCountry(country);
+
+    if (option) {
+      setSelectedDialCode(option.dialCode);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,14 +70,18 @@ export function LeadForm({ copy }: LeadFormProps) {
 
     const formData = new FormData(form);
 
+    const phoneNumber = String(formData.get("phone") || "").trim();
+    const cleanDialCode = selectedDialCode.trim();
+    const fullPhone = `${cleanDialCode} ${phoneNumber}`.trim();
+
     const payload = {
       locale: copy.locale,
       challengeSlug: copy.slug,
       fullName: String(formData.get("fullName") || "").trim(),
       email: String(formData.get("email") || "").trim(),
-      phone: String(formData.get("phone") || "").trim(),
+      phone: fullPhone,
       city: String(formData.get("city") || "").trim(),
-      country: String(formData.get("country") || "").trim(),
+      country: selectedCountry,
       donationAmount: selectedAmount,
       paymentMethod: "sumup",
       privacyAccepted: formData.get("privacyAccepted") === "on"
@@ -58,6 +106,8 @@ export function LeadForm({ copy }: LeadFormProps) {
       setMessage(copy.form.successText);
       form.reset();
       setSelectedAmount(firstDonationOption);
+      setSelectedCountry(COUNTRY_OPTIONS[0].country);
+      setSelectedDialCode(COUNTRY_OPTIONS[0].dialCode);
     } catch (error) {
       console.error("Lead form error:", error);
       setStatus("error");
@@ -103,28 +153,64 @@ export function LeadForm({ copy }: LeadFormProps) {
           autoComplete="email"
         />
 
-        <input
-          className="input-line text-base"
-          name="phone"
-          placeholder={copy.form.phone}
-          required
-          minLength={5}
-          autoComplete="tel"
-        />
+        <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr]">
+          <select
+            className="input-line text-base"
+            name="country"
+            value={selectedCountry}
+            onChange={handleCountryChange}
+            required
+            autoComplete="country-name"
+          >
+            {COUNTRY_OPTIONS.map((option) => (
+              <option
+                key={option.country}
+                value={option.country}
+                className="bg-charcoal text-linen"
+              >
+                {option.country}
+              </option>
+            ))}
+          </select>
 
-        <input
-          className="input-line text-base"
-          name="city"
-          placeholder={copy.form.city}
-          autoComplete="address-level2"
-        />
+          <input
+            className="input-line text-base"
+            name="city"
+            placeholder={copy.form.city}
+            autoComplete="address-level2"
+          />
+        </div>
 
-        <input
-          className="input-line text-base"
-          name="country"
-          placeholder={copy.form.country}
-          autoComplete="country-name"
-        />
+        <div className="grid gap-5 md:grid-cols-[0.38fr_1.62fr]">
+          <select
+            className="input-line text-base"
+            name="dialCode"
+            value={selectedDialCode}
+            onChange={(event) => setSelectedDialCode(event.target.value)}
+            required
+            autoComplete="tel-country-code"
+          >
+            {COUNTRY_OPTIONS.map((option) => (
+              <option
+                key={`${option.country}-${option.dialCode}`}
+                value={option.dialCode}
+                className="bg-charcoal text-linen"
+              >
+                {option.dialCode} · {option.country}
+              </option>
+            ))}
+          </select>
+
+          <input
+            className="input-line text-base"
+            name="phone"
+            placeholder={copy.form.phone}
+            required
+            minLength={5}
+            autoComplete="tel-national"
+            inputMode="tel"
+          />
+        </div>
       </div>
 
       <div className="mx-auto mt-9 max-w-2xl">
