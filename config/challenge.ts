@@ -149,10 +149,10 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       subtitle: "Es el nivel de compromiso que eliges contigo.",
       minimum: "El mínimo es 7€. Puedes aportar más si realmente quieres implicarte en tu cambio.",
       options: [
-        { amount: "7€", label: "Compromiso inicial" },
-        { amount: "17€", label: "Compromiso medio" },
-        { amount: "27€", label: "Compromiso profundo" },
-        { amount: "47€", label: "Compromiso total" }
+        { amount: "7€", label: "Solo curiosear" },
+        { amount: "17€", label: "Quiero entender" },
+        { amount: "27€ ⭐", label: "Voy en serio" },
+        { amount: "47€", label: "Estoy comprometid@ con mi cambio" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -265,10 +265,10 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       subtitle: "It is the level of commitment you choose for yourself.",
       minimum: "The minimum is €7. You can contribute more if you truly want to commit to your change.",
       options: [
-        { amount: "€7", label: "Initial commitment" },
-        { amount: "€17", label: "Medium commitment" },
-        { amount: "€27", label: "Deep commitment" },
-        { amount: "€47", label: "Full commitment" }
+        { amount: "€7", label: "Just curious" },
+        { amount: "€17", label: "I want to understand" },
+        { amount: "€27 ⭐", label: "I am serious" },
+        { amount: "€47", label: "I am committed to my change" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
