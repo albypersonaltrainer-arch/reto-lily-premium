@@ -10,8 +10,11 @@ type LeadFormProps = {
 type FormStatus = "idle" | "loading" | "success" | "error";
 
 export function LeadForm({ copy }: LeadFormProps) {
+  const firstDonationOption = copy.donation.options[0]?.amount || "7€";
+
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,7 +34,7 @@ export function LeadForm({ copy }: LeadFormProps) {
       phone: String(formData.get("phone") || "").trim(),
       city: String(formData.get("city") || "").trim(),
       country: String(formData.get("country") || "").trim(),
-      donationAmount: String(formData.get("donationAmount") || "7€").trim(),
+      donationAmount: selectedAmount,
       paymentMethod: "sumup",
       privacyAccepted: formData.get("privacyAccepted") === "on"
     };
@@ -54,6 +57,7 @@ export function LeadForm({ copy }: LeadFormProps) {
       setStatus("success");
       setMessage(copy.form.successText);
       form.reset();
+      setSelectedAmount(firstDonationOption);
     } catch (error) {
       console.error("Lead form error:", error);
       setStatus("error");
@@ -129,34 +133,62 @@ export function LeadForm({ copy }: LeadFormProps) {
         </p>
 
         <div className="grid gap-3 sm:grid-cols-4">
-          {copy.donation.options.map((option, index) => (
-            <label
-              key={option.amount}
-              className="cursor-pointer rounded-2xl border border-champagne/20 bg-black/20 p-4 text-center transition hover:border-champagne/60 hover:bg-champagne/10"
-            >
-              <input
-                type="radio"
-                name="donationAmount"
-                value={option.amount}
-                defaultChecked={index === 0}
-                className="sr-only peer"
-              />
+          {copy.donation.options.map((option, index) => {
+            const isSelected = selectedAmount === option.amount;
 
-              <span className="block font-serif text-3xl text-linen peer-checked:text-champagne">
-                {option.amount}
-              </span>
+            return (
+              <label
+                key={option.amount}
+                className={`cursor-pointer rounded-2xl border p-4 text-center transition duration-300 ${
+                  isSelected
+                    ? "border-champagne bg-champagne/18 shadow-glow"
+                    : "border-champagne/20 bg-black/20 hover:border-champagne/60 hover:bg-champagne/10"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="donationAmount"
+                  value={option.amount}
+                  defaultChecked={index === 0}
+                  onChange={() => setSelectedAmount(option.amount)}
+                  className="sr-only"
+                />
 
-              <span className="mt-2 block text-[10px] font-bold uppercase tracking-[0.16em] text-muted peer-checked:text-linen">
-                {option.label}
-              </span>
-            </label>
-          ))}
+                <span
+                  className={`block font-serif text-3xl transition ${
+                    isSelected ? "text-champagne" : "text-linen"
+                  }`}
+                >
+                  {option.amount}
+                </span>
+
+                <span
+                  className={`mt-2 block text-[10px] font-bold uppercase tracking-[0.16em] transition ${
+                    isSelected ? "text-linen" : "text-muted"
+                  }`}
+                >
+                  {option.label}
+                </span>
+
+                {isSelected ? (
+                  <span className="mt-3 block text-[10px] font-black uppercase tracking-[0.18em] text-champagne">
+                    Seleccionado
+                  </span>
+                ) : null}
+              </label>
+            );
+          })}
         </div>
       </div>
 
       <div className="mx-auto mt-8 max-w-2xl">
         <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-6 text-muted">
-          <input name="privacyAccepted" type="checkbox" required className="mt-1 accent-[#f2ca50]" />
+          <input
+            name="privacyAccepted"
+            type="checkbox"
+            required
+            className="mt-1 accent-[#f2ca50]"
+          />
           <span>{copy.form.privacy}</span>
         </label>
       </div>
