@@ -86,8 +86,9 @@ export function VideoGate({
 
   return (
     <div className="w-full max-w-5xl">
-      <div className="relative overflow-hidden rounded-[2rem] border border-champagne/25 bg-black/45 p-3 shadow-soft">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,215,123,0.16),transparent_42%)]" />
+      <div className="relative overflow-hidden rounded-[2rem] border border-champagne/30 bg-black/45 p-3 shadow-soft">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,215,123,0.18),transparent_44%)]" />
+        <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-champagne/60 to-transparent" />
 
         <div className="relative aspect-video overflow-hidden rounded-[1.45rem] border border-white/10 bg-obsidian">
           {embedUrl ? (
@@ -100,7 +101,7 @@ export function VideoGate({
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center px-8 text-center">
-              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-4xl text-champagne shadow-glow">
+              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-champagne/35 bg-champagne/10 text-4xl text-champagne shadow-glow">
                 ▶
               </div>
 
@@ -116,18 +117,18 @@ export function VideoGate({
         </div>
       </div>
 
-      <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-champagne/25 bg-champagne/5 px-6 py-6 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.28em] text-champagne">
+      <div className="mx-auto mt-8 max-w-2xl rounded-[1.5rem] border border-champagne/35 bg-gradient-to-br from-champagne/12 via-white/[0.04] to-black/20 px-6 py-7 text-center shadow-soft">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-champagne">
           {isUnlocked ? "Acceso desbloqueado" : unlockLabel}
         </p>
 
-        <div className="mt-4 font-serif text-5xl leading-none text-linen md:text-6xl">
+        <div className="mt-4 font-serif text-6xl leading-none text-linen md:text-7xl">
           {formatTime(remainingSeconds)}
         </div>
 
-        <p className="mt-4 text-sm leading-7 text-muted">
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-linen/80">
           {isUnlocked
-            ? "Ya puedes solicitar tu acceso al reto."
+            ? "Ya puedes avanzar y solicitar tu acceso al reto."
             : lockedText}
         </p>
       </div>
