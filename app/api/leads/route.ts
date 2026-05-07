@@ -10,7 +10,7 @@ const leadSchema = z.object({
   challengeSlug: z.string().min(1),
   fullName: z.string().min(2).max(140),
   email: z.string().email().max(180),
-  phone: z.string().min(5).max(60),
+  phone: z.string().min(5).max(80),
   city: z.string().max(100).optional(),
   country: z.string().max(100).optional(),
   donationAmount: z.string().min(1).max(30),
@@ -36,25 +36,30 @@ export async function POST(request: Request) {
     const token = createConfirmationToken();
     const supabase = getSupabaseAdmin();
 
-    const { error } = await supabase.from("reto_lily_leads").insert({
-      locale: body.locale,
-      challenge_slug: body.challengeSlug,
-      full_name: body.fullName,
-      email: body.email.toLowerCase(),
-      phone: body.phone,
-      city: body.city || null,
-      country: body.country || null,
-      donation_amount: body.donationAmount,
-      payment_method: body.paymentMethod,
-      privacy_accepted: body.privacyAccepted,
-      status: "pending_confirmation",
-      payment_status: "pending",
-      confirmation_token: token,
-      video_completed: true,
-      source: "landing"
-    });
+    const { data: insertedLead, error } = await supabase
+      .from("reto_lily_leads")
+      .insert({
+        locale: body.locale,
+        challenge_slug: body.challengeSlug,
+        full_name: body.fullName,
+        email: body.email.toLowerCase(),
+        phone: body.phone,
+        city: body.city || null,
+        country: body.country || null,
+        donation_amount: body.donationAmount,
+        payment_method: "stripe",
+        payment_provider: "stripe",
+        privacy_accepted: body.privacyAccepted,
+        status: "pending_confirmation",
+        payment_status: "pending",
+        confirmation_token: token,
+        video_completed: true,
+        source: "landing"
+      })
+      .select("id")
+      .single();
 
-    if (error) {
+    if (error || !insertedLead) {
       console.error("Supabase lead insert error:", error);
 
       return NextResponse.json(
@@ -81,7 +86,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      ok: true
+      ok: true,
+      leadId: insertedLead.id
     });
   } catch (error) {
     console.error("Lead request error:", error);
