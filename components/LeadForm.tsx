@@ -15,49 +15,218 @@ type CountryOption = {
 };
 
 const COUNTRY_OPTIONS: CountryOption[] = [
-  { country: "España", dialCode: "+34" },
-  { country: "Estados Unidos", dialCode: "+1" },
-  { country: "Canadá", dialCode: "+1" },
-  { country: "México", dialCode: "+52" },
-  { country: "Colombia", dialCode: "+57" },
+  // América
+  { country: "Antigua y Barbuda", dialCode: "+1-268" },
   { country: "Argentina", dialCode: "+54" },
-  { country: "Chile", dialCode: "+56" },
-  { country: "Perú", dialCode: "+51" },
-  { country: "Ecuador", dialCode: "+593" },
-  { country: "Venezuela", dialCode: "+58" },
-  { country: "Uruguay", dialCode: "+598" },
-  { country: "Paraguay", dialCode: "+595" },
+  { country: "Aruba", dialCode: "+297" },
+  { country: "Bahamas", dialCode: "+1-242" },
+  { country: "Barbados", dialCode: "+1-246" },
+  { country: "Belice", dialCode: "+501" },
+  { country: "Bermudas", dialCode: "+1-441" },
   { country: "Bolivia", dialCode: "+591" },
+  { country: "Bonaire", dialCode: "+599" },
+  { country: "Brasil", dialCode: "+55" },
+  { country: "Canadá", dialCode: "+1" },
+  { country: "Chile", dialCode: "+56" },
+  { country: "Colombia", dialCode: "+57" },
   { country: "Costa Rica", dialCode: "+506" },
+  { country: "Cuba", dialCode: "+53" },
+  { country: "Curazao", dialCode: "+599" },
+  { country: "Dominica", dialCode: "+1-767" },
+  { country: "Ecuador", dialCode: "+593" },
+  { country: "El Salvador", dialCode: "+503" },
+  { country: "Estados Unidos", dialCode: "+1" },
+  { country: "Granada", dialCode: "+1-473" },
+  { country: "Groenlandia", dialCode: "+299" },
+  { country: "Guadalupe", dialCode: "+590" },
+  { country: "Guatemala", dialCode: "+502" },
+  { country: "Guayana Francesa", dialCode: "+594" },
+  { country: "Guyana", dialCode: "+592" },
+  { country: "Haití", dialCode: "+509" },
+  { country: "Honduras", dialCode: "+504" },
+  { country: "Islas Caimán", dialCode: "+1-345" },
+  { country: "Islas Malvinas", dialCode: "+500" },
+  { country: "Islas Turcas y Caicos", dialCode: "+1-649" },
+  { country: "Islas Vírgenes Británicas", dialCode: "+1-284" },
+  { country: "Islas Vírgenes de EE. UU.", dialCode: "+1-340" },
+  { country: "Jamaica", dialCode: "+1-876" },
+  { country: "Martinica", dialCode: "+596" },
+  { country: "México", dialCode: "+52" },
+  { country: "Montserrat", dialCode: "+1-664" },
+  { country: "Nicaragua", dialCode: "+505" },
   { country: "Panamá", dialCode: "+507" },
-  { country: "República Dominicana", dialCode: "+1" },
-  { country: "Puerto Rico", dialCode: "+1" },
-  { country: "Reino Unido", dialCode: "+44" },
-  { country: "Portugal", dialCode: "+351" },
-  { country: "Francia", dialCode: "+33" },
-  { country: "Italia", dialCode: "+39" },
+  { country: "Paraguay", dialCode: "+595" },
+  { country: "Perú", dialCode: "+51" },
+  { country: "Puerto Rico", dialCode: "+1-787" },
+  { country: "República Dominicana", dialCode: "+1-809" },
+  { country: "San Bartolomé", dialCode: "+590" },
+  { country: "San Cristóbal y Nieves", dialCode: "+1-869" },
+  { country: "San Martín", dialCode: "+590" },
+  { country: "San Pedro y Miquelón", dialCode: "+508" },
+  { country: "San Vicente y las Granadinas", dialCode: "+1-784" },
+  { country: "Santa Lucía", dialCode: "+1-758" },
+  { country: "Sint Maarten", dialCode: "+1-721" },
+  { country: "Surinam", dialCode: "+597" },
+  { country: "Trinidad y Tobago", dialCode: "+1-868" },
+  { country: "Uruguay", dialCode: "+598" },
+  { country: "Venezuela", dialCode: "+58" },
+
+  // Europa
+  { country: "Albania", dialCode: "+355" },
   { country: "Alemania", dialCode: "+49" },
+  { country: "Andorra", dialCode: "+376" },
+  { country: "Armenia", dialCode: "+374" },
+  { country: "Austria", dialCode: "+43" },
+  { country: "Azerbaiyán", dialCode: "+994" },
+  { country: "Bélgica", dialCode: "+32" },
+  { country: "Bielorrusia", dialCode: "+375" },
+  { country: "Bosnia y Herzegovina", dialCode: "+387" },
+  { country: "Bulgaria", dialCode: "+359" },
+  { country: "Chipre", dialCode: "+357" },
+  { country: "Ciudad del Vaticano", dialCode: "+39" },
+  { country: "Croacia", dialCode: "+385" },
+  { country: "Dinamarca", dialCode: "+45" },
+  { country: "Eslovaquia", dialCode: "+421" },
+  { country: "Eslovenia", dialCode: "+386" },
+  { country: "España", dialCode: "+34" },
+  { country: "Estonia", dialCode: "+372" },
+  { country: "Finlandia", dialCode: "+358" },
+  { country: "Francia", dialCode: "+33" },
+  { country: "Georgia", dialCode: "+995" },
+  { country: "Gibraltar", dialCode: "+350" },
+  { country: "Grecia", dialCode: "+30" },
+  { country: "Hungría", dialCode: "+36" },
+  { country: "Irlanda", dialCode: "+353" },
+  { country: "Islandia", dialCode: "+354" },
+  { country: "Islas Feroe", dialCode: "+298" },
+  { country: "Italia", dialCode: "+39" },
+  { country: "Kosovo", dialCode: "+383" },
+  { country: "Letonia", dialCode: "+371" },
+  { country: "Liechtenstein", dialCode: "+423" },
+  { country: "Lituania", dialCode: "+370" },
+  { country: "Luxemburgo", dialCode: "+352" },
+  { country: "Malta", dialCode: "+356" },
+  { country: "Moldavia", dialCode: "+373" },
+  { country: "Mónaco", dialCode: "+377" },
+  { country: "Montenegro", dialCode: "+382" },
+  { country: "Noruega", dialCode: "+47" },
+  { country: "Países Bajos", dialCode: "+31" },
+  { country: "Polonia", dialCode: "+48" },
+  { country: "Portugal", dialCode: "+351" },
+  { country: "Reino Unido", dialCode: "+44" },
+  { country: "República Checa", dialCode: "+420" },
+  { country: "Macedonia del Norte", dialCode: "+389" },
+  { country: "Rumanía", dialCode: "+40" },
+  { country: "Rusia", dialCode: "+7" },
+  { country: "San Marino", dialCode: "+378" },
+  { country: "Serbia", dialCode: "+381" },
+  { country: "Suecia", dialCode: "+46" },
+  { country: "Suiza", dialCode: "+41" },
+  { country: "Turquía", dialCode: "+90" },
+  { country: "Ucrania", dialCode: "+380" },
+
+  // Asia
+  { country: "Afganistán", dialCode: "+93" },
+  { country: "Arabia Saudí", dialCode: "+966" },
+  { country: "Baréin", dialCode: "+973" },
+  { country: "Bangladesh", dialCode: "+880" },
+  { country: "Bután", dialCode: "+975" },
+  { country: "Brunéi", dialCode: "+673" },
+  { country: "Camboya", dialCode: "+855" },
+  { country: "Catar", dialCode: "+974" },
+  { country: "China", dialCode: "+86" },
+  { country: "Corea del Norte", dialCode: "+850" },
+  { country: "Corea del Sur", dialCode: "+82" },
+  { country: "Emiratos Árabes Unidos", dialCode: "+971" },
+  { country: "Filipinas", dialCode: "+63" },
+  { country: "Hong Kong", dialCode: "+852" },
+  { country: "India", dialCode: "+91" },
+  { country: "Indonesia", dialCode: "+62" },
+  { country: "Irak", dialCode: "+964" },
+  { country: "Irán", dialCode: "+98" },
+  { country: "Israel", dialCode: "+972" },
+  { country: "Japón", dialCode: "+81" },
+  { country: "Jordania", dialCode: "+962" },
+  { country: "Kazajistán", dialCode: "+7" },
+  { country: "Kirguistán", dialCode: "+996" },
+  { country: "Kuwait", dialCode: "+965" },
+  { country: "Laos", dialCode: "+856" },
+  { country: "Líbano", dialCode: "+961" },
+  { country: "Macao", dialCode: "+853" },
+  { country: "Malasia", dialCode: "+60" },
+  { country: "Maldivas", dialCode: "+960" },
+  { country: "Mongolia", dialCode: "+976" },
+  { country: "Myanmar", dialCode: "+95" },
+  { country: "Nepal", dialCode: "+977" },
+  { country: "Omán", dialCode: "+968" },
+  { country: "Pakistán", dialCode: "+92" },
+  { country: "Palestina", dialCode: "+970" },
+  { country: "Singapur", dialCode: "+65" },
+  { country: "Siria", dialCode: "+963" },
+  { country: "Sri Lanka", dialCode: "+94" },
+  { country: "Tailandia", dialCode: "+66" },
+  { country: "Taiwán", dialCode: "+886" },
+  { country: "Tayikistán", dialCode: "+992" },
+  { country: "Timor Oriental", dialCode: "+670" },
+  { country: "Turkmenistán", dialCode: "+993" },
+  { country: "Uzbekistán", dialCode: "+998" },
+  { country: "Vietnam", dialCode: "+84" },
+  { country: "Yemen", dialCode: "+967" },
+
+  // Oceanía
+  { country: "Australia", dialCode: "+61" },
+  { country: "Fiyi", dialCode: "+679" },
+  { country: "Guam", dialCode: "+1-671" },
+  { country: "Isla Norfolk", dialCode: "+672" },
+  { country: "Islas Cook", dialCode: "+682" },
+  { country: "Islas Marshall", dialCode: "+692" },
+  { country: "Islas Marianas del Norte", dialCode: "+1-670" },
+  { country: "Islas Salomón", dialCode: "+677" },
+  { country: "Kiribati", dialCode: "+686" },
+  { country: "Micronesia", dialCode: "+691" },
+  { country: "Nauru", dialCode: "+674" },
+  { country: "Niue", dialCode: "+683" },
+  { country: "Nueva Caledonia", dialCode: "+687" },
+  { country: "Nueva Zelanda", dialCode: "+64" },
+  { country: "Palaos", dialCode: "+680" },
+  { country: "Papúa Nueva Guinea", dialCode: "+675" },
+  { country: "Polinesia Francesa", dialCode: "+689" },
+  { country: "Samoa", dialCode: "+685" },
+  { country: "Samoa Americana", dialCode: "+1-684" },
+  { country: "Tokelau", dialCode: "+690" },
+  { country: "Tonga", dialCode: "+676" },
+  { country: "Tuvalu", dialCode: "+688" },
+  { country: "Vanuatu", dialCode: "+678" },
+  { country: "Wallis y Futuna", dialCode: "+681" },
+
   { country: "Otro", dialCode: "+" }
 ];
 
+function getOptionId(option: CountryOption) {
+  return `${option.country}__${option.dialCode}`;
+}
+
+function getOptionById(optionId: string) {
+  return COUNTRY_OPTIONS.find((option) => getOptionId(option) === optionId) || COUNTRY_OPTIONS[0];
+}
+
 export function LeadForm({ copy }: LeadFormProps) {
   const firstDonationOption = copy.donation.options[0]?.amount || "7€";
+  const defaultCountryOption =
+    COUNTRY_OPTIONS.find((option) => option.country === "España") || COUNTRY_OPTIONS[0];
 
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
-  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_OPTIONS[0].country);
-  const [selectedDialCode, setSelectedDialCode] = useState(COUNTRY_OPTIONS[0].dialCode);
+  const [selectedCountry, setSelectedCountry] = useState(defaultCountryOption.country);
+  const [selectedDialOptionId, setSelectedDialOptionId] = useState(getOptionId(defaultCountryOption));
 
   function handleCountryChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const country = event.target.value;
-    const option = COUNTRY_OPTIONS.find((item) => item.country === country);
+    const option = COUNTRY_OPTIONS.find((item) => item.country === country) || defaultCountryOption;
 
-    setSelectedCountry(country);
-
-    if (option) {
-      setSelectedDialCode(option.dialCode);
-    }
+    setSelectedCountry(option.country);
+    setSelectedDialOptionId(getOptionId(option));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -70,9 +239,9 @@ export function LeadForm({ copy }: LeadFormProps) {
 
     const formData = new FormData(form);
 
+    const selectedDialOption = getOptionById(selectedDialOptionId);
     const phoneNumber = String(formData.get("phone") || "").trim();
-    const cleanDialCode = selectedDialCode.trim();
-    const fullPhone = `${cleanDialCode} ${phoneNumber}`.trim();
+    const fullPhone = `${selectedDialOption.dialCode} ${phoneNumber}`.trim();
 
     const payload = {
       locale: copy.locale,
@@ -106,8 +275,8 @@ export function LeadForm({ copy }: LeadFormProps) {
       setMessage(copy.form.successText);
       form.reset();
       setSelectedAmount(firstDonationOption);
-      setSelectedCountry(COUNTRY_OPTIONS[0].country);
-      setSelectedDialCode(COUNTRY_OPTIONS[0].dialCode);
+      setSelectedCountry(defaultCountryOption.country);
+      setSelectedDialOptionId(getOptionId(defaultCountryOption));
     } catch (error) {
       console.error("Lead form error:", error);
       setStatus("error");
@@ -164,7 +333,7 @@ export function LeadForm({ copy }: LeadFormProps) {
           >
             {COUNTRY_OPTIONS.map((option) => (
               <option
-                key={option.country}
+                key={getOptionId(option)}
                 value={option.country}
                 className="bg-charcoal text-linen"
               >
@@ -181,19 +350,19 @@ export function LeadForm({ copy }: LeadFormProps) {
           />
         </div>
 
-        <div className="grid gap-5 md:grid-cols-[0.38fr_1.62fr]">
+        <div className="grid gap-5 md:grid-cols-[0.48fr_1.52fr]">
           <select
             className="input-line text-base"
             name="dialCode"
-            value={selectedDialCode}
-            onChange={(event) => setSelectedDialCode(event.target.value)}
+            value={selectedDialOptionId}
+            onChange={(event) => setSelectedDialOptionId(event.target.value)}
             required
             autoComplete="tel-country-code"
           >
             {COUNTRY_OPTIONS.map((option) => (
               <option
-                key={`${option.country}-${option.dialCode}`}
-                value={option.dialCode}
+                key={getOptionId(option)}
+                value={getOptionId(option)}
                 className="bg-charcoal text-linen"
               >
                 {option.dialCode} · {option.country}
