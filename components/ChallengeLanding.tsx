@@ -115,11 +115,13 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
         <section className="radial-pool px-6 py-20 md:py-28">
           <div className="mx-auto max-w-4xl text-center">
             <div
-              className={`glass-panel pattern-card rounded-xl border-champagne/30 p-8 transition duration-700 md:p-14 ${
-                unlocked ? "translate-y-0 opacity-100 shadow-glow" : "translate-y-3 opacity-60"
+              className={`rounded-[2rem] border p-8 transition duration-700 md:p-14 ${
+                unlocked
+                  ? "translate-y-0 border-champagne/55 bg-gradient-to-br from-champagne/18 via-white/[0.07] to-champagne/8 opacity-100 shadow-glow"
+                  : "translate-y-3 border-champagne/35 bg-gradient-to-br from-champagne/12 via-white/[0.05] to-black/10 opacity-95 shadow-soft"
               }`}
             >
-              <p className="mb-5 text-xs font-bold uppercase tracking-[0.28em] text-champagne">
+              <p className="mb-5 text-xs font-black uppercase tracking-[0.28em] text-champagne">
                 {unlocked ? accessUnlockedLabel : postVideoLabel}
               </p>
 
@@ -140,31 +142,10 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                 {copy.unlock.cta}
               </a>
 
-              <p className="mt-6 text-sm italic text-linen/75">
+              <p className="mt-6 text-sm italic text-linen/80">
                 {copy.unlock.note}
               </p>
             </div>
-          </div>
-        </section>
-
-        <section className="px-6 py-20 md:py-28">
-          <div className="mx-auto grid max-w-content items-center gap-12 md:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.32em] text-champagne">
-                {copy.countdown.label}
-              </p>
-              <h2 className="mt-5 font-serif text-4xl leading-tight text-linen md:text-6xl">
-                {copy.countdown.title}
-              </h2>
-              <p className="mt-5 text-lg leading-8 text-muted">
-                {copy.countdown.text}
-              </p>
-            </div>
-
-            <Countdown
-              deadlineIso={copy.countdown.deadlineIso}
-              urgencyMinutes={copy.countdown.urgencyMinutes}
-            />
           </div>
         </section>
 
@@ -192,7 +173,7 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                   {copy.coach.name}
                 </h2>
 
-                <p className="mt-4 font-serif text-2xl text-champagne">
+                <p className="mt-4 font-serif text-2xl leading-tight text-champagne">
                   {copy.coach.subtitle}
                 </p>
 
@@ -200,44 +181,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                   {copy.coach.text}
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 py-20 md:py-28">
-          <div className="mx-auto max-w-content text-center">
-            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
-              {copy.donation.title}
-            </h2>
-
-            <p className="text-glow mt-5 font-serif text-3xl text-champagne">
-              {copy.donation.subtitle}
-            </p>
-
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted">
-              {copy.donation.minimum}
-            </p>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-4">
-              {copy.donation.options.map((option) => (
-                <a
-                  key={option.amount}
-                  href={copy.donation.paymentMethods.sumup}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="glass-panel pattern-card group rounded-xl p-8 transition duration-500 hover:-translate-y-1 hover:border-champagne/50 hover:shadow-glow"
-                >
-                  <div className="font-serif text-5xl text-linen transition group-hover:text-champagne">
-                    {option.amount}
-                  </div>
-                  <div className="mt-4 text-xs uppercase tracking-[0.24em] text-muted/80">
-                    {option.label}
-                  </div>
-                  <div className="mt-7 text-[11px] font-bold uppercase tracking-[0.22em] text-champagne/80">
-                    {chooseContributionLabel}
-                  </div>
-                </a>
-              ))}
             </div>
           </div>
         </section>
@@ -263,12 +206,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section id="solicita-acceso" className="scroll-mt-28 px-6 py-20 md:py-28">
-          <div className="mx-auto max-w-4xl">
-            <LeadForm copy={copy} />
           </div>
         </section>
 
@@ -303,6 +240,88 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </div>
         </section>
 
+        <section className="radial-pool px-6 py-24 text-center md:py-32">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
+              {copy.final.title}
+            </h2>
+
+            <p className="mt-6 text-xl leading-9 text-muted">
+              {copy.final.text}
+            </p>
+
+            <a
+              href="#solicita-acceso"
+              className="btn-glow mt-10 inline-flex rounded bg-gold px-10 py-5 text-xs font-bold uppercase tracking-[0.24em] text-[#3c2f00] transition hover:bg-champagne"
+            >
+              {copy.final.cta}
+            </a>
+          </div>
+        </section>
+
+        <section className="px-6 py-20 md:py-28">
+          <div className="mx-auto max-w-content text-center">
+            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
+              {copy.donation.title}
+            </h2>
+
+            <p className="text-glow mt-5 font-serif text-3xl text-champagne">
+              {copy.donation.subtitle}
+            </p>
+
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted">
+              {copy.donation.minimum}
+            </p>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-4">
+              {copy.donation.options.map((option) => (
+                <a
+                  key={option.amount}
+                  href="#solicita-acceso"
+                  className="glass-panel pattern-card group rounded-xl p-8 transition duration-500 hover:-translate-y-1 hover:border-champagne/50 hover:shadow-glow"
+                >
+                  <div className="font-serif text-5xl text-linen transition group-hover:text-champagne">
+                    {option.amount}
+                  </div>
+                  <div className="mt-4 text-xs uppercase tracking-[0.24em] text-muted/80">
+                    {option.label}
+                  </div>
+                  <div className="mt-7 text-[11px] font-bold uppercase tracking-[0.22em] text-champagne/80">
+                    {chooseContributionLabel}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-20 md:py-28">
+          <div className="mx-auto grid max-w-content items-center gap-12 md:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.32em] text-champagne">
+                {copy.countdown.label}
+              </p>
+              <h2 className="mt-5 font-serif text-4xl leading-tight text-linen md:text-6xl">
+                {copy.countdown.title}
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-muted">
+                {copy.countdown.text}
+              </p>
+            </div>
+
+            <Countdown
+              deadlineIso={copy.countdown.deadlineIso}
+              urgencyMinutes={copy.countdown.urgencyMinutes}
+            />
+          </div>
+        </section>
+
+        <section id="solicita-acceso" className="scroll-mt-28 px-6 py-20 md:py-28">
+          <div className="mx-auto max-w-4xl">
+            <LeadForm copy={copy} />
+          </div>
+        </section>
+
         <section className="px-6 py-20 md:py-28">
           <div className="mx-auto max-w-3xl">
             <div className="glass-panel pattern-card rounded-xl p-8 text-center md:p-12">
@@ -327,25 +346,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                 {copy.whatsapp.cta}
               </a>
             </div>
-          </div>
-        </section>
-
-        <section className="radial-pool px-6 py-28 text-center md:py-40">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
-              {copy.final.title}
-            </h2>
-
-            <p className="mt-6 text-xl leading-9 text-muted">
-              {copy.final.text}
-            </p>
-
-            <a
-              href="#solicita-acceso"
-              className="btn-glow mt-10 inline-flex rounded bg-gold px-10 py-5 text-xs font-bold uppercase tracking-[0.24em] text-[#3c2f00] transition hover:bg-champagne"
-            >
-              {copy.final.cta}
-            </a>
           </div>
         </section>
       </main>
