@@ -240,25 +240,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </div>
         </section>
 
-        <section className="radial-pool px-6 py-24 text-center md:py-32">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
-              {copy.final.title}
-            </h2>
-
-            <p className="mt-6 text-xl leading-9 text-muted">
-              {copy.final.text}
-            </p>
-
-            <a
-              href="#solicita-acceso"
-              className="btn-glow mt-10 inline-flex rounded bg-gold px-10 py-5 text-xs font-bold uppercase tracking-[0.24em] text-[#3c2f00] transition hover:bg-champagne"
-            >
-              {copy.final.cta}
-            </a>
-          </div>
-        </section>
-
         <section className="px-6 py-20 md:py-28">
           <div className="mx-auto max-w-content text-center">
             <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
@@ -292,6 +273,25 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                 </a>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="radial-pool px-6 py-24 text-center md:py-32">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="font-serif text-5xl leading-tight text-linen md:text-7xl">
+              {copy.final.title}
+            </h2>
+
+            <p className="mt-6 text-xl leading-9 text-muted">
+              {copy.final.text}
+            </p>
+
+            <a
+              href="#solicita-acceso"
+              className="btn-glow mt-12 inline-flex rounded bg-gold px-12 py-6 text-sm font-black uppercase tracking-[0.28em] text-[#3c2f00] transition hover:bg-champagne md:px-16 md:py-7 md:text-base"
+            >
+              {copy.final.cta}
+            </a>
           </div>
         </section>
 
