@@ -151,8 +151,8 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       options: [
         { amount: "7€", label: "Solo curiosear" },
         { amount: "17€", label: "Quiero entender" },
-        { amount: "27€ ⭐", label: "Voy en serio" },
-        { amount: "47€", label: "Estoy comprometid@ con mi cambio" }
+        { amount: "27€", label: "Voy en serio" },
+        { amount: "47€", label: "Estoy comprometid＠ con mi cambio" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -267,7 +267,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       options: [
         { amount: "€7", label: "Just curious" },
         { amount: "€17", label: "I want to understand" },
-        { amount: "€27 ⭐", label: "I am serious" },
+        { amount: "€27", label: "I am serious" },
         { amount: "€47", label: "I am committed to my change" }
       ],
       paymentMethods: {
