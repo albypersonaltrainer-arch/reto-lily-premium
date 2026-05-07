@@ -244,12 +244,12 @@ export function LeadForm({ copy }: LeadFormProps) {
       city: String(formData.get("city") || "").trim(),
       country: selectedCountry,
       donationAmount: selectedAmount,
-      paymentMethod: "sumup",
+      paymentMethod: "stripe",
       privacyAccepted: formData.get("privacyAccepted") === "on"
     };
 
     try {
-      const response = await fetch("/api/leads", {
+      const leadResponse = await fetch("/api/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -257,22 +257,46 @@ export function LeadForm({ copy }: LeadFormProps) {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json().catch(() => null);
+      const leadResult = await leadResponse.json().catch(() => null);
 
-      if (!response.ok || result?.ok !== true) {
-        throw new Error(result?.error || "Request failed");
+      if (!leadResponse.ok || leadResult?.ok !== true || !leadResult?.leadId) {
+        throw new Error(leadResult?.error || "Could not register lead");
       }
 
       setStatus("success");
-      setMessage(copy.form.successText);
-      form.reset();
-      setSelectedAmount(firstDonationOption);
-      setSelectedCountry(defaultCountryOption.country);
-      setSelectedDialOptionId(getOptionId(defaultCountryOption));
+      setMessage(
+        copy.locale === "es"
+          ? "Solicitud recibida. Te estamos llevando a la página segura de pago."
+          : "Request received. We are taking you to the secure payment page."
+      );
+
+      const checkoutResponse = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          leadId: leadResult.leadId,
+          locale: copy.locale,
+          challengeSlug: copy.slug
+        })
+      });
+
+      const checkoutResult = await checkoutResponse.json().catch(() => null);
+
+      if (!checkoutResponse.ok || checkoutResult?.ok !== true || !checkoutResult?.url) {
+        throw new Error(checkoutResult?.error || "Could not create checkout session");
+      }
+
+      window.location.href = checkoutResult.url;
     } catch (error) {
-      console.error("Lead form error:", error);
+      console.error("Lead form checkout error:", error);
       setStatus("error");
-      setMessage(copy.form.errorText);
+      setMessage(
+        copy.locale === "es"
+          ? "No hemos podido abrir la página de pago. Revisa los datos e inténtalo de nuevo."
+          : "We could not open the payment page. Please review your details and try again."
+      );
     }
   }
 
@@ -446,11 +470,11 @@ export function LeadForm({ copy }: LeadFormProps) {
           disabled={status === "loading"}
           className="btn-glow w-full rounded bg-gold px-8 py-5 text-xs font-black uppercase tracking-[0.24em] text-[#3c2f00] transition hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-60 md:w-auto md:min-w-[360px]"
         >
-          {status === "loading" ? "Enviando..." : copy.form.submit}
+          {status === "loading" ? "Preparando pago..." : copy.form.submit}
         </button>
 
         <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-muted">
-          Después de confirmar tus datos recibirás el acceso para completar tu aportación.
+          Después de enviar tus datos, te llevaremos a la página segura de Stripe para completar tu aportación.
         </p>
       </div>
 
