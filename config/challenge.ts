@@ -114,16 +114,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       placeholderText: "Vídeo de Lily · versión española",
       helper:
         "Este vídeo dura menos de 10 minutos. Si de verdad quieres entender qué está pasando con tu dinero, míralo hasta el final.",
-      locked: "El acceso al reto se desbloquea cuando termines el vídeo.",
+      locked: "El acceso al reto se desbloquea cuando termine la cuenta atrás.",
       unlockLabel: "El acceso al reto se desbloquea en:",
       unlockAfterSeconds: 120
     },
     coach: {
-      title: "Tu coach",
+      title: "Lily Camarena",
       name: "Lily Camarena",
-      subtitle: "Mente nueva, vida nueva",
+      subtitle: "Si hacer más fuera la solución, ya habrías cambiado.",
       text:
-        "Lily acompaña a mujeres que quieren dejar de repetir los mismos patrones internos y empezar a relacionarse con el dinero desde un lugar más claro, consciente y real.",
+        "Lily acompaña a hombres y mujeres a trabajar en lo que sigue sosteniendo el mismo resultado, aunque lo estés intentando.",
       image: "/lily-camarena-logo.png"
     },
     unlock: {
@@ -177,7 +177,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       phone: "WhatsApp / Teléfono",
       city: "Ciudad",
       country: "País",
-      amount: "Aportación elegida",
+      amount: "Elige tu aportación",
       paymentMethod: "Método de pago preferido",
       privacy: "Acepto la política de privacidad y el uso de mis datos para gestionar este reto.",
       submit: "Confirmar mi acceso",
@@ -230,16 +230,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       placeholderText: "Lily video · English version",
       helper:
         "This video is under 10 minutes. If you truly want to understand what is happening with your money, watch it until the end.",
-      locked: "Access to the challenge unlocks when you finish the video.",
+      locked: "Access to the challenge unlocks when the countdown finishes.",
       unlockLabel: "Access to the challenge unlocks in:",
       unlockAfterSeconds: 120
     },
     coach: {
-      title: "Your coach",
+      title: "Lily Camarena",
       name: "Lily Camarena",
-      subtitle: "New mind, new life",
+      subtitle: "If doing more were the solution, you would have changed already.",
       text:
-        "Lily supports women who want to stop repeating the same inner patterns and start relating to money from a clearer, more conscious and more grounded place.",
+        "Lily supports men and women in working on what keeps sustaining the same result, even when they are trying.",
       image: "/lily-camarena-logo.png"
     },
     unlock: {
@@ -292,7 +292,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       phone: "WhatsApp / Phone",
       city: "City",
       country: "Country",
-      amount: "Chosen contribution",
+      amount: "Choose your contribution",
       paymentMethod: "Preferred payment method",
       privacy: "I accept the privacy policy and the use of my data to manage this challenge.",
       submit: "Confirm my access",
