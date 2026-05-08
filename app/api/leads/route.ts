@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { challengeByLocale, type Locale } from "@/config/challenge";
-import { sendLeadConfirmationEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { createConfirmationToken } from "@/lib/tokens";
 
@@ -50,7 +49,7 @@ export async function POST(request: Request) {
         payment_method: "stripe",
         payment_provider: "stripe",
         privacy_accepted: body.privacyAccepted,
-        status: "pending_confirmation",
+        status: "pending_payment",
         payment_status: "pending",
         confirmation_token: token,
         video_completed: true,
@@ -69,20 +68,6 @@ export async function POST(request: Request) {
         },
         { status: 500 }
       );
-    }
-
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const confirmationUrl = `${siteUrl}/${body.locale}/confirmar?token=${token}`;
-
-    try {
-      await sendLeadConfirmationEmail({
-        email: body.email,
-        fullName: body.fullName,
-        locale: body.locale,
-        confirmationUrl
-      });
-    } catch (emailError) {
-      console.error("Confirmation email error:", emailError);
     }
 
     return NextResponse.json({
