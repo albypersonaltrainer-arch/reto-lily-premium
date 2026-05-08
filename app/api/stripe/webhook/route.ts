@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { type Locale } from "@/config/challenge";
+import { sendPaidAccessEmail } from "@/lib/email";
 import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
+
+function formatStripeAmount(amountTotal: number | null, currency: string | null) {
+  if (!amountTotal) return undefined;
+
+  const amount = amountTotal / 100;
+  const safeCurrency = currency?.toUpperCase() || "USD";
+
+  return `${amount.toFixed(2)} ${safeCurrency}`;
+}
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   const leadId = session.metadata?.lead_id;
@@ -20,7 +31,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
   const supabase = getSupabaseAdmin();
 
-  const { error } = await supabase
+  const { data: leadBeforeUpdate, error: leadLookupError } = await supabase
+    .from("reto_lily_leads")
+    .select("id, full_name, email, locale, payment_status")
+    .eq("id", leadId)
+    .single();
+
+  if (leadLookupError || !leadBeforeUpdate) {
+    console.error("Supabase lead lookup before paid update error:", leadLookupError);
+    throw leadLookupError || new Error("Lead not found before paid update");
+  }
+
+  const { error: updateError } = await supabase
     .from("reto_lily_leads")
     .update({
       status: "paid",
@@ -35,9 +57,25 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     })
     .eq("id", leadId);
 
-  if (error) {
-    console.error("Supabase paid update error:", error);
-    throw error;
+  if (updateError) {
+    console.error("Supabase paid update error:", updateError);
+    throw updateError;
+  }
+
+  if (leadBeforeUpdate.payment_status === "paid") {
+    return;
+  }
+
+  try {
+    await sendPaidAccessEmail({
+      email: leadBeforeUpdate.email,
+      fullName: leadBeforeUpdate.full_name,
+      locale: (leadBeforeUpdate.locale === "en" ? "en" : "es") as Locale,
+      amount: formatStripeAmount(session.amount_total, session.currency),
+      currency: session.currency || "usd"
+    });
+  } catch (emailError) {
+    console.error("Paid access email error:", emailError);
   }
 }
 
