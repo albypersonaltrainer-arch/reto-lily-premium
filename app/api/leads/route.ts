@@ -49,7 +49,7 @@ export async function POST(request: Request) {
         payment_method: "stripe",
         payment_provider: "stripe",
         privacy_accepted: body.privacyAccepted,
-        status: "pending_payment",
+        status: "pending_confirmation",
         payment_status: "pending",
         confirmation_token: token,
         video_completed: true,
