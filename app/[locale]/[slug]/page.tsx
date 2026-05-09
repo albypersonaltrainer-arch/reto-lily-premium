@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { ChallengeLanding } from "@/components/ChallengeLanding";
-import { getChallenge } from "@/config/challenge";
+import { getChallenge, type Locale } from "@/config/challenge";
+import { getEditableChallengeCopy } from "@/lib/challengeSettings";
+
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return [
@@ -9,8 +12,23 @@ export function generateStaticParams() {
   ];
 }
 
-export default function ChallengePage({ params }: { params: { locale: string; slug: string } }) {
-  const challenge = getChallenge(params.locale, params.slug);
-  if (!challenge) notFound();
+type ChallengePageProps = {
+  params: {
+    locale: string;
+    slug: string;
+  };
+};
+
+export default async function ChallengePage({ params }: ChallengePageProps) {
+  const locale: Locale = params.locale === "en" ? "en" : "es";
+
+  const baseChallenge = getChallenge(params.locale, params.slug);
+
+  if (!baseChallenge) {
+    notFound();
+  }
+
+  const challenge = await getEditableChallengeCopy(locale);
+
   return <ChallengeLanding copy={challenge} />;
 }
