@@ -413,6 +413,48 @@ export default function LilyAdminPanelPage() {
     }
   }
 
+  function clearTestimonialMedia(index: number) {
+    setContent((current) => {
+      const nextTestimonials = [...current.testimonials];
+
+      nextTestimonials[index] = {
+        ...nextTestimonials[index],
+        mediaKind: "none",
+        mediaUrl: "",
+        type: "Texto"
+      };
+
+      return {
+        ...current,
+        testimonials: nextTestimonials
+      };
+    });
+
+    setSelectedTestimonialFiles((current) => ({
+      ...current,
+      [index]: null
+    }));
+
+    setTestimonialUploadStatus((current) => ({
+      ...current,
+      [index]: "idle"
+    }));
+
+    setTestimonialUploadMessages((current) => ({
+      ...current,
+      [index]: "Archivo quitado de este testimonio. Pulsa “Guardar cambios” para aplicarlo en la landing."
+    }));
+
+    if (testimonialFileInputRefs.current[index]) {
+      testimonialFileInputRefs.current[index]!.value = "";
+    }
+
+    if (status === "success") {
+      setStatus("idle");
+      setMessage("");
+    }
+  }
+
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -1155,9 +1197,19 @@ export default function LilyAdminPanelPage() {
 
                       {testimonial.mediaUrl ? (
                         <div className="mt-5 rounded-2xl border border-champagne/20 bg-champagne/5 p-4">
-                          <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-champagne">
-                            Vista previa
-                          </p>
+                          <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            <p className="text-xs font-black uppercase tracking-[0.18em] text-champagne">
+                              Vista previa
+                            </p>
+
+                            <button
+                              type="button"
+                              onClick={() => clearTestimonialMedia(index)}
+                              className="rounded border border-red-300/45 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-red-200 transition hover:bg-red-400/10"
+                            >
+                              Quitar archivo
+                            </button>
+                          </div>
 
                           {testimonial.mediaKind === "image" ? (
                             <img
