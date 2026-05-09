@@ -7,6 +7,16 @@ type EditablePrice = {
   label: string;
 };
 
+type EditableTestimonialMediaKind = "none" | "image" | "video" | "audio";
+
+type EditableTestimonial = {
+  name: string;
+  text: string;
+  type: string;
+  mediaKind?: EditableTestimonialMediaKind;
+  mediaUrl?: string;
+};
+
 type EditableChallengeSettings = {
   heroTitle?: string;
   heroSubtitle?: string;
@@ -16,6 +26,7 @@ type EditableChallengeSettings = {
   coachText?: string;
   learnItems?: string[];
   testimonialsText?: string;
+  testimonials?: EditableTestimonial[];
   prices?: EditablePrice[];
   whatsappUrl?: string;
   whatsappText?: string;
@@ -94,6 +105,89 @@ function sanitizeLearnItems(value: unknown, fallback: string[]) {
   return cleaned.length > 0 ? cleaned : fallback;
 }
 
+function sanitizeMediaKind(value: unknown): EditableTestimonialMediaKind {
+  if (
+    value === "image" ||
+    value === "video" ||
+    value === "audio" ||
+    value === "none"
+  ) {
+    return value;
+  }
+
+  return "none";
+}
+
+function sanitizeMediaUrl(value: unknown) {
+  if (typeof value !== "string") return "";
+
+  const trimmed = value.trim();
+
+  if (!trimmed) return "";
+
+  if (
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed;
+  }
+
+  return "";
+}
+
+function sanitizeTestimonials(
+  value: unknown,
+  fallback: Array<{ name: string; text: string; type: string }>
+): EditableTestimonial[] {
+  const fallbackTestimonials: EditableTestimonial[] = fallback.map((item) => ({
+    name: item.name,
+    text: item.text,
+    type: item.type,
+    mediaKind: "none",
+    mediaUrl: ""
+  }));
+
+  if (!Array.isArray(value)) return fallbackTestimonials;
+
+  const cleaned = value
+    .map((item, index) => {
+      if (!item || typeof item !== "object") return null;
+
+      const fallbackItem = fallbackTestimonials[index] || {
+        name: `Testimonio ${index + 1}`,
+        text: "",
+        type: "Texto",
+        mediaKind: "none" as EditableTestimonialMediaKind,
+        mediaUrl: ""
+      };
+
+      const rawName = "name" in item ? item.name : null;
+      const rawText = "text" in item ? item.text : null;
+      const rawType = "type" in item ? item.type : null;
+      const rawMediaKind = "mediaKind" in item ? item.mediaKind : null;
+      const rawMediaUrl = "mediaUrl" in item ? item.mediaUrl : null;
+
+      const name = sanitizeText(rawName, fallbackItem.name);
+      const text = sanitizeText(rawText, fallbackItem.text);
+      const type = sanitizeText(rawType, fallbackItem.type);
+      const mediaKind = sanitizeMediaKind(rawMediaKind);
+      const mediaUrl = sanitizeMediaUrl(rawMediaUrl);
+
+      return {
+        name,
+        text,
+        type,
+        mediaKind: mediaUrl ? mediaKind : "none",
+        mediaUrl
+      };
+    })
+    .filter((item): item is EditableTestimonial => Boolean(item))
+    .slice(0, 6);
+
+  return cleaned.length > 0 ? cleaned : fallbackTestimonials;
+}
+
 function applyEditableSettings(
   baseCopy: ChallengeCopy,
   settings: EditableChallengeSettings
@@ -101,6 +195,10 @@ function applyEditableSettings(
   const prices = sanitizePrices(settings.prices, baseCopy.donation.options);
   const learnItems = sanitizeLearnItems(settings.learnItems, baseCopy.learn.items);
   const showTestimonials = sanitizeBoolean(settings.showTestimonials, true);
+  const testimonials = sanitizeTestimonials(
+    settings.testimonials,
+    baseCopy.testimonials.items
+  );
 
   return {
     ...baseCopy,
@@ -130,7 +228,7 @@ function applyEditableSettings(
     testimonials: {
       ...baseCopy.testimonials,
       text: sanitizeText(settings.testimonialsText, baseCopy.testimonials.text),
-      items: showTestimonials ? baseCopy.testimonials.items : []
+      items: showTestimonials ? testimonials : []
     },
     whatsapp: {
       ...baseCopy.whatsapp,
