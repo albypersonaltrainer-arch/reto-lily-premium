@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 type PriceOption = {
   amount: string;
@@ -30,6 +31,16 @@ type ApiResponse = {
   updatedAt?: string;
 };
 
+type VideoUploadResponse = {
+  ok: boolean;
+  error?: string;
+  bucket?: string;
+  path?: string;
+  token?: string;
+  signedUrl?: string;
+  publicUrl?: string;
+};
+
 const EMPTY_CONTENT: PanelContent = {
   heroTitle: "",
   heroSubtitle: "",
@@ -49,6 +60,15 @@ const EMPTY_CONTENT: PanelContent = {
   whatsappText: "",
   showTestimonials: true
 };
+
+const MAX_VIDEO_SIZE_BYTES = 524288000;
+
+const ALLOWED_VIDEO_TYPES = [
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/x-m4v"
+];
 
 function normalizeContent(content: Partial<PanelContent> | null | undefined): PanelContent {
   return {
@@ -74,6 +94,22 @@ function normalizeContent(content: Partial<PanelContent> | null | undefined): Pa
         ? content.showTestimonials
         : EMPTY_CONTENT.showTestimonials
   };
+}
+
+function getSupabaseBrowserClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Faltan las variables públicas de Supabase.");
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+function formatFileSize(bytes: number) {
+  const mb = bytes / 1024 / 1024;
+  return `${mb.toFixed(1)} MB`;
 }
 
 function FieldLabel({
@@ -124,12 +160,18 @@ function SectionCard({
 }
 
 export default function LilyAdminPanelPage() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [secret, setSecret] = useState("");
   const [locale, setLocale] = useState<"es" | "en">("es");
   const [content, setContent] = useState<PanelContent>(EMPTY_CONTENT);
   const [status, setStatus] = useState<"idle" | "loading" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+
+  const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
+  const [videoUploadStatus, setVideoUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [videoUploadMessage, setVideoUploadMessage] = useState("");
 
   const apiUrl = useMemo(() => {
     const params = new URLSearchParams({
@@ -244,6 +286,98 @@ export default function LilyAdminPanelPage() {
     window.localStorage.setItem("lily_admin_secret", nextSecret);
     setSecret(nextSecret);
     setMessage("");
+  }
+
+  async function handleVideoUpload() {
+    if (!selectedVideoFile) {
+      setVideoUploadStatus("error");
+      setVideoUploadMessage("Selecciona primero un archivo de vídeo.");
+      return;
+    }
+
+    if (!ALLOWED_VIDEO_TYPES.includes(selectedVideoFile.type)) {
+      setVideoUploadStatus("error");
+      setVideoUploadMessage("Formato no permitido. Usa MP4, WEBM, MOV o M4V.");
+      return;
+    }
+
+    if (selectedVideoFile.size > MAX_VIDEO_SIZE_BYTES) {
+      setVideoUploadStatus("error");
+      setVideoUploadMessage("El vídeo supera el límite máximo de 500 MB.");
+      return;
+    }
+
+    setVideoUploadStatus("uploading");
+    setVideoUploadMessage("Preparando subida segura...");
+
+    try {
+      const prepareResponse = await fetch("/api/admin/reto-lily-video-upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          secret,
+          fileName: selectedVideoFile.name,
+          fileType: selectedVideoFile.type,
+          fileSize: selectedVideoFile.size
+        })
+      });
+
+      const prepareResult = (await prepareResponse.json().catch(() => null)) as VideoUploadResponse | null;
+
+      if (
+        !prepareResponse.ok ||
+        !prepareResult?.ok ||
+        !prepareResult.bucket ||
+        !prepareResult.path ||
+        !prepareResult.token ||
+        !prepareResult.publicUrl
+      ) {
+        throw new Error(prepareResult?.error || "No se pudo preparar la subida del vídeo.");
+      }
+
+      setVideoUploadMessage("Subiendo vídeo a Supabase Storage...");
+
+      const supabase = getSupabaseBrowserClient();
+
+      const { error: uploadError } = await supabase.storage
+        .from(prepareResult.bucket)
+        .uploadToSignedUrl(
+          prepareResult.path,
+          prepareResult.token,
+          selectedVideoFile,
+          {
+            contentType: selectedVideoFile.type,
+            upsert: false
+          }
+        );
+
+      if (uploadError) {
+        console.error("Supabase video upload error:", uploadError);
+        throw new Error("No se pudo subir el vídeo.");
+      }
+
+      updateContent("videoUrl", prepareResult.publicUrl);
+      setSelectedVideoFile(null);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      setVideoUploadStatus("success");
+      setVideoUploadMessage(
+        "Vídeo subido correctamente. La URL se ha pegado automáticamente. Pulsa “Guardar cambios” para publicarlo en la landing."
+      );
+    } catch (error) {
+      console.error("Video upload error:", error);
+      setVideoUploadStatus("error");
+      setVideoUploadMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo subir el vídeo."
+      );
+    }
   }
 
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
@@ -488,13 +622,13 @@ export default function LilyAdminPanelPage() {
 
             <SectionCard
               title="Vídeo"
-              subtitle="Cuando Lily tenga el vídeo final, aquí se podrá pegar la URL."
+              subtitle="Puedes pegar una URL externa o subir un vídeo directamente desde este panel."
             >
               <div className="grid gap-6">
                 <div>
                   <FieldLabel
                     title="URL del vídeo"
-                    helper="Puede quedar vacío hasta que el vídeo esté listo. Más adelante recomendamos YouTube no listado, Vimeo o Bunny."
+                    helper="Si subes un vídeo desde este panel, esta URL se rellenará automáticamente. También puedes pegar aquí una URL externa de YouTube no listado, Vimeo, Bunny, etc."
                   />
                   <input
                     value={content.videoUrl}
@@ -503,6 +637,66 @@ export default function LilyAdminPanelPage() {
                     placeholder="https://..."
                     maxLength={500}
                   />
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <FieldLabel
+                    title="Subir vídeo"
+                    helper="Formatos permitidos: MP4, WEBM, MOV o M4V. Tamaño máximo: 500 MB."
+                  />
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] || null;
+                      setSelectedVideoFile(file);
+                      setVideoUploadStatus("idle");
+                      setVideoUploadMessage("");
+                    }}
+                    className="mt-4 block w-full cursor-pointer rounded-2xl border border-champagne/20 bg-white/[0.03] px-4 py-4 text-sm text-muted file:mr-4 file:rounded file:border-0 file:bg-gold file:px-4 file:py-3 file:text-xs file:font-black file:uppercase file:tracking-[0.18em] file:text-[#3c2f00]"
+                  />
+
+                  {selectedVideoFile ? (
+                    <div className="mt-4 rounded-2xl border border-champagne/20 bg-champagne/5 p-4 text-sm leading-6 text-muted">
+                      <p>
+                        <strong className="text-champagne">Archivo seleccionado:</strong>{" "}
+                        {selectedVideoFile.name}
+                      </p>
+                      <p>
+                        <strong className="text-champagne">Tamaño:</strong>{" "}
+                        {formatFileSize(selectedVideoFile.size)}
+                      </p>
+                      <p>
+                        <strong className="text-champagne">Formato:</strong>{" "}
+                        {selectedVideoFile.type || "No detectado"}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={handleVideoUpload}
+                    disabled={!selectedVideoFile || videoUploadStatus === "uploading"}
+                    className="mt-5 rounded border border-champagne/60 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em] text-champagne transition hover:bg-champagne hover:text-[#2f250d] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {videoUploadStatus === "uploading" ? "Subiendo vídeo..." : "Subir vídeo"}
+                  </button>
+
+                  {videoUploadMessage ? (
+                    <p
+                      className={`mt-4 rounded-2xl border px-5 py-4 text-sm leading-6 ${
+                        videoUploadStatus === "success"
+                          ? "border-champagne/30 bg-champagne/5 text-champagne"
+                          : videoUploadStatus === "error"
+                            ? "border-red-300/30 bg-red-500/5 text-red-200"
+                            : "border-white/10 bg-white/[0.03] text-muted"
+                      }`}
+                    >
+                      {videoUploadMessage}
+                    </p>
+                  ) : null}
                 </div>
 
                 <div>
