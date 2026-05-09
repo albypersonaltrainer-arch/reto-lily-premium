@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { challengeByLocale, type Locale } from "@/config/challenge";
+import { getChallenge, type Locale } from "@/config/challenge";
+import { getEditableChallengeCopy } from "@/lib/challengeSettings";
 import {
   getStripe,
   getDonationLabel,
@@ -17,9 +18,11 @@ const checkoutSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = checkoutSchema.parse(await request.json());
-    const challenge = challengeByLocale[body.locale as Locale];
+    const locale = body.locale as Locale;
 
-    if (!challenge || challenge.slug !== body.challengeSlug) {
+    const baseChallenge = getChallenge(body.locale, body.challengeSlug);
+
+    if (!baseChallenge) {
       return NextResponse.json(
         {
           ok: false,
@@ -28,6 +31,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const challenge = await getEditableChallengeCopy(locale);
+    const allowedDonationOptions = challenge.donation.options;
 
     const supabase = getSupabaseAdmin();
 
@@ -62,8 +68,15 @@ export async function POST(request: Request) {
     const stripe = getStripe();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-    const amountInCents = normalizeDonationAmountToCents(lead.donation_amount);
-    const donationLabel = getDonationLabel(lead.donation_amount);
+    const amountInCents = normalizeDonationAmountToCents(
+      lead.donation_amount,
+      allowedDonationOptions
+    );
+
+    const donationLabel = getDonationLabel(
+      lead.donation_amount,
+      allowedDonationOptions
+    );
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
