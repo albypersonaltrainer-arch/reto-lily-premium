@@ -207,6 +207,9 @@ export function LeadForm({ copy }: LeadFormProps) {
   const defaultCountryOption =
     COUNTRY_OPTIONS.find((option) => option.country === "España") || COUNTRY_OPTIONS[0];
 
+  const privacyHref = `/${copy.locale}/legal/privacidad`;
+  const termsHref = `/${copy.locale}/legal/terminos`;
+
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
@@ -460,7 +463,53 @@ export function LeadForm({ copy }: LeadFormProps) {
             required
             className="mt-1 accent-[#f2ca50]"
           />
-          <span>{copy.form.privacy}</span>
+          <span>
+            {copy.locale === "es" ? (
+              <>
+                Acepto la{" "}
+                <a
+                  href={privacyHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                >
+                  Política de privacidad
+                </a>{" "}
+                y los{" "}
+                <a
+                  href={termsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                >
+                  Términos y condiciones
+                </a>
+                .
+              </>
+            ) : (
+              <>
+                I accept the{" "}
+                <a
+                  href={privacyHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                >
+                  Privacy Policy
+                </a>{" "}
+                and the{" "}
+                <a
+                  href={termsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                >
+                  Terms and Conditions
+                </a>
+                .
+              </>
+            )}
+          </span>
         </label>
       </div>
 
