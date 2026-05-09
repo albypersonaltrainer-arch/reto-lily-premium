@@ -141,7 +141,7 @@ export async function sendPaidAccessEmail({
           </p>
 
           <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Importante: revisa bien tu bandeja de entrada para no perderte el acceso.
+            Revisa bien tu bandeja de entrada y SPAM para no perderte el acceso.
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export async function sendPaidAccessEmail({
           </p>
 
           <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Important: please check your inbox carefully so you do not miss the access.
+            Please check your inbox and SPAM carefully so you do not miss the access.
           </p>
         </div>
 
