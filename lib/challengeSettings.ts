@@ -13,8 +13,8 @@ type EditableTestimonial = {
   name: string;
   text: string;
   type: string;
-  mediaKind?: EditableTestimonialMediaKind;
-  mediaUrl?: string;
+  mediaKind: EditableTestimonialMediaKind;
+  mediaUrl: string;
 };
 
 type EditableChallengeSettings = {
@@ -89,7 +89,7 @@ function sanitizePrices(value: unknown, fallback: EditablePrice[]) {
         label: label.trim()
       };
     })
-    .filter((item): item is EditablePrice => Boolean(item));
+    .filter((item): item is EditablePrice => item !== null);
 
   return cleaned.length > 0 ? cleaned : fallback;
 }
@@ -151,7 +151,7 @@ function sanitizeTestimonials(
   if (!Array.isArray(value)) return fallbackTestimonials;
 
   const cleaned = value
-    .map((item, index) => {
+    .map((item, index): EditableTestimonial | null => {
       if (!item || typeof item !== "object") return null;
 
       const fallbackItem = fallbackTestimonials[index] || {
@@ -182,7 +182,7 @@ function sanitizeTestimonials(
         mediaUrl
       };
     })
-    .filter((item): item is EditableTestimonial => Boolean(item))
+    .filter((item): item is EditableTestimonial => item !== null)
     .slice(0, 6);
 
   return cleaned.length > 0 ? cleaned : fallbackTestimonials;
