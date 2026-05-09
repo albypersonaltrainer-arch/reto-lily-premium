@@ -17,6 +17,29 @@ const priceSchema = z.object({
     .max(80, "La etiqueta es demasiado larga.")
 });
 
+const testimonialMediaKindSchema = z.enum(["none", "image", "video", "audio"]);
+
+const testimonialSchema = z.object({
+  name: z
+    .string()
+    .min(1, "El nombre del testimonio es obligatorio.")
+    .max(120, "El nombre del testimonio es demasiado largo."),
+  text: z
+    .string()
+    .min(1, "El texto del testimonio es obligatorio.")
+    .max(900, "El texto del testimonio es demasiado largo."),
+  type: z
+    .string()
+    .min(1, "El tipo del testimonio es obligatorio.")
+    .max(80, "El tipo del testimonio es demasiado largo."),
+  mediaKind: testimonialMediaKindSchema.default("none"),
+  mediaUrl: z
+    .string()
+    .max(700, "La URL del archivo es demasiado larga.")
+    .optional()
+    .default("")
+});
+
 const settingsSchema = z.object({
   heroTitle: z.string().min(3).max(180),
   heroSubtitle: z.string().min(3).max(180),
@@ -33,6 +56,7 @@ const settingsSchema = z.object({
     .max(6),
 
   testimonialsText: z.string().min(5).max(700),
+  testimonials: z.array(testimonialSchema).min(0).max(6).optional().default([]),
 
   prices: z.array(priceSchema).min(1).max(4),
 
@@ -129,6 +153,48 @@ function validateWhatsappUrl(url: string) {
   }
 }
 
+function validateSafeUrl(url: string, fieldName: string) {
+  const trimmedUrl = url.trim();
+
+  if (!trimmedUrl) return;
+
+  if (
+    !trimmedUrl.startsWith("https://") &&
+    !trimmedUrl.startsWith("http://") &&
+    !trimmedUrl.startsWith("/")
+  ) {
+    throw new Error(`${fieldName} debe ser una URL válida.`);
+  }
+}
+
+function cleanTestimonials(
+  testimonials: z.infer<typeof testimonialSchema>[]
+) {
+  return testimonials
+    .map((testimonial) => {
+      const mediaUrl = testimonial.mediaUrl?.trim() || "";
+      const mediaKind = mediaUrl ? testimonial.mediaKind : "none";
+
+      validateSafeUrl(mediaUrl, "La URL del archivo del testimonio");
+
+      return {
+        name: testimonial.name.trim(),
+        text: testimonial.text.trim(),
+        type: testimonial.type.trim(),
+        mediaKind,
+        mediaUrl
+      };
+    })
+    .filter((testimonial) => {
+      return (
+        testimonial.name.length > 0 ||
+        testimonial.text.length > 0 ||
+        testimonial.mediaUrl.length > 0
+      );
+    })
+    .slice(0, 6);
+}
+
 function cleanContent(content: z.infer<typeof settingsSchema>) {
   const cleaned = {
     heroTitle: content.heroTitle.trim(),
@@ -143,6 +209,7 @@ function cleanContent(content: z.infer<typeof settingsSchema>) {
     learnItems: content.learnItems.map((item) => item.trim()),
 
     testimonialsText: content.testimonialsText.trim(),
+    testimonials: cleanTestimonials(content.testimonials || []),
 
     prices: content.prices.map((price) => ({
       amount: price.amount.trim(),
@@ -155,6 +222,7 @@ function cleanContent(content: z.infer<typeof settingsSchema>) {
     showTestimonials: content.showTestimonials
   };
 
+  validateSafeUrl(cleaned.videoUrl, "La URL del vídeo");
   validatePrices(cleaned.prices);
   validateWhatsappUrl(cleaned.whatsappUrl);
 
