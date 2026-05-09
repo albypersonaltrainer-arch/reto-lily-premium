@@ -2,6 +2,31 @@ import Stripe from "stripe";
 
 let stripeClient: Stripe | null = null;
 
+const ALLOWED_DONATION_AMOUNTS: Record<
+  string,
+  {
+    cents: number;
+    label: string;
+  }
+> = {
+  "7": {
+    cents: 700,
+    label: "Compromiso inicial"
+  },
+  "17": {
+    cents: 1700,
+    label: "Compromiso medio"
+  },
+  "27": {
+    cents: 2700,
+    label: "Compromiso profundo"
+  },
+  "47": {
+    cents: 4700,
+    label: "Compromiso total"
+  }
+};
+
 export function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
@@ -26,28 +51,8 @@ export function getStripeWebhookSecret() {
   return webhookSecret;
 }
 
-export function normalizeDonationAmountToCents(amount: string) {
-  const numericAmount = Number(
-    amount
-      .replace("€", "")
-      .replace("$", "")
-      .replace("USD", "")
-      .replace("usd", "")
-      .replace("@", "")
-      .replace("＠", "")
-      .replace("⭐", "")
-      .trim()
-  );
-
-  if (!Number.isFinite(numericAmount) || numericAmount < 1) {
-    throw new Error("Invalid donation amount");
-  }
-
-  return Math.round(numericAmount * 100);
-}
-
-export function getDonationLabel(amount: string) {
-  const normalizedAmount = amount
+function normalizeDonationAmount(amount: string) {
+  return amount
     .replace("€", "")
     .replace("$", "")
     .replace("USD", "")
@@ -56,13 +61,22 @@ export function getDonationLabel(amount: string) {
     .replace("＠", "")
     .replace("⭐", "")
     .trim();
+}
 
-  const labels: Record<string, string> = {
-    "7": "Solo curiosear",
-    "17": "Quiero entender",
-    "27": "Voy en serio",
-    "47": "Estoy comprometid@ con mi cambio"
-  };
+export function normalizeDonationAmountToCents(amount: string) {
+  const normalizedAmount = normalizeDonationAmount(amount);
+  const donation = ALLOWED_DONATION_AMOUNTS[normalizedAmount];
 
-  return labels[normalizedAmount] || "Aportación al reto";
+  if (!donation) {
+    throw new Error("Invalid donation amount");
+  }
+
+  return donation.cents;
+}
+
+export function getDonationLabel(amount: string) {
+  const normalizedAmount = normalizeDonationAmount(amount);
+  const donation = ALLOWED_DONATION_AMOUNTS[normalizedAmount];
+
+  return donation?.label || "Aportación al reto";
 }
