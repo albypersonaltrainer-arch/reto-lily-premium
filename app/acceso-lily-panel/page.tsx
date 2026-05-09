@@ -159,6 +159,24 @@ function SectionCard({
   );
 }
 
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs = 18000
+) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal
+    });
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 export default function LilyAdminPanelPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -206,10 +224,10 @@ export default function LilyAdminPanelPage() {
 
     async function loadSettings() {
       setStatus("loading");
-      setMessage("");
+      setMessage("Cargando configuración...");
 
       try {
-        const response = await fetch(apiUrl, {
+        const response = await fetchWithTimeout(apiUrl, {
           method: "GET",
           cache: "no-store"
         });
@@ -223,6 +241,7 @@ export default function LilyAdminPanelPage() {
         setContent(normalizeContent(result.content));
         setUpdatedAt(result.updatedAt || null);
         setStatus("idle");
+        setMessage("");
       } catch (error) {
         console.error("Lily admin load error:", error);
         setStatus("error");
@@ -242,6 +261,11 @@ export default function LilyAdminPanelPage() {
       ...current,
       [key]: value
     }));
+
+    if (status === "success") {
+      setStatus("idle");
+      setMessage("");
+    }
   }
 
   function updateLearnItem(index: number, value: string) {
@@ -254,6 +278,11 @@ export default function LilyAdminPanelPage() {
         learnItems: nextItems
       };
     });
+
+    if (status === "success") {
+      setStatus("idle");
+      setMessage("");
+    }
   }
 
   function updatePrice(index: number, field: keyof PriceOption, value: string) {
@@ -269,6 +298,11 @@ export default function LilyAdminPanelPage() {
         prices: nextPrices
       };
     });
+
+    if (status === "success") {
+      setStatus("idle");
+      setMessage("");
+    }
   }
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
@@ -311,7 +345,7 @@ export default function LilyAdminPanelPage() {
     setVideoUploadMessage("Preparando subida segura...");
 
     try {
-      const prepareResponse = await fetch("/api/admin/reto-lily-video-upload", {
+      const prepareResponse = await fetchWithTimeout("/api/admin/reto-lily-video-upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -380,11 +414,32 @@ export default function LilyAdminPanelPage() {
     }
   }
 
+  async function reloadSettingsAfterSave() {
+    const params = new URLSearchParams({
+      locale,
+      secret
+    });
+
+    const response = await fetchWithTimeout(`/api/admin/reto-lily-settings?${params.toString()}`, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    const result = (await response.json().catch(() => null)) as ApiResponse | null;
+
+    if (!response.ok || !result?.ok || !result.content) {
+      throw new Error(result?.error || "Guardado realizado, pero no se pudo recargar la configuración.");
+    }
+
+    setContent(normalizeContent(result.content));
+    setUpdatedAt(result.updatedAt || null);
+  }
+
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setStatus("saving");
-    setMessage("");
+    setMessage("Guardando cambios...");
 
     const cleanContent: PanelContent = {
       ...content,
@@ -407,7 +462,7 @@ export default function LilyAdminPanelPage() {
     };
 
     try {
-      const response = await fetch("/api/admin/reto-lily-settings", {
+      const response = await fetchWithTimeout("/api/admin/reto-lily-settings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -426,10 +481,11 @@ export default function LilyAdminPanelPage() {
         throw new Error(result?.error || "No se pudo guardar la configuración.");
       }
 
-      setContent(normalizeContent(result.content));
-      setUpdatedAt(result.updatedAt || null);
+      await reloadSettingsAfterSave();
+
       setStatus("success");
-      setMessage("Cambios guardados correctamente. La landing ya debería reflejarlos.");
+      setMessage("Cambios guardados correctamente. Abre o recarga la landing para verlos.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("Lily admin save error:", error);
       setStatus("error");
@@ -438,6 +494,7 @@ export default function LilyAdminPanelPage() {
           ? error.message
           : "No se pudo guardar la configuración."
       );
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
@@ -542,13 +599,13 @@ export default function LilyAdminPanelPage() {
         </div>
 
         <div className="mb-8 rounded-2xl border border-champagne/20 bg-champagne/5 p-5 text-sm leading-7 text-muted">
-          <strong className="text-champagne">Importante:</strong> por ahora, hasta completar el siguiente paso técnico, mantén los importes en <strong>7$, 17$, 27$ y 47$</strong>. Puedes cambiar textos, vídeo, etiquetas y WhatsApp con normalidad.
+          <strong className="text-champagne">Importante:</strong> los precios que guardes aquí serán los precios visibles en la landing y los precios validados para Stripe Checkout.
         </div>
 
         {message ? (
           <div
             className={`mb-8 rounded-2xl border px-6 py-5 text-sm ${
-              status === "success"
+              status === "success" || status === "saving" || status === "loading"
                 ? "border-champagne/30 bg-champagne/5 text-champagne"
                 : "border-red-300/30 bg-red-500/5 text-red-200"
             }`}
@@ -775,7 +832,7 @@ export default function LilyAdminPanelPage() {
 
             <SectionCard
               title="Precios"
-              subtitle="Por seguridad, deja ahora los importes oficiales. Las etiquetas sí pueden cambiarse."
+              subtitle="Puedes cambiar importes y etiquetas. La moneda de Stripe sigue fija en USD."
             >
               <div className="grid gap-5 md:grid-cols-2">
                 {content.prices.map((price, index) => (
@@ -843,6 +900,14 @@ export default function LilyAdminPanelPage() {
             </SectionCard>
 
             <div className="sticky bottom-5 z-20 rounded-[2rem] border border-champagne/30 bg-surface/85 p-4 shadow-glow backdrop-blur-2xl">
+              <div className="mb-3 text-center text-xs uppercase tracking-[0.18em] text-muted">
+                {status === "saving"
+                  ? "Guardando cambios..."
+                  : status === "success"
+                    ? "Últimos cambios guardados"
+                    : "Revisa y guarda antes de salir"}
+              </div>
+
               <button
                 type="submit"
                 disabled={status === "saving"}
