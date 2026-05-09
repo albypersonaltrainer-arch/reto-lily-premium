@@ -32,13 +32,21 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
   const chooseContributionLabel =
     copy.locale === "es" ? "Elegir aportación" : "Choose contribution";
 
+  const privacyHref = `/${copy.locale}/legal/privacidad`;
+  const termsHref = `/${copy.locale}/legal/terminos`;
+  const landingHref = `/${copy.locale}/${copy.slug}`;
+
   return (
     <div className="invisible-pattern-shell">
       <div className="luxury-noise" />
 
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-surface/55 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-content items-center justify-between px-5 py-3 md:px-6 md:py-4">
-          <a href={`/${copy.locale}/${copy.slug}`} className="flex items-center gap-3">
+          <a
+            href={landingHref}
+            aria-label={copy.brand}
+            className="flex items-center gap-3"
+          >
             <Image
               src={copy.brandLogo}
               alt={copy.brand}
@@ -47,9 +55,6 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
               className="h-12 w-12 rounded-full object-contain md:h-14 md:w-14"
               priority
             />
-            <span className="hidden font-serif text-2xl tracking-tight text-champagne sm:block">
-              {copy.brand}
-            </span>
           </a>
 
           <a
@@ -200,9 +205,7 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                   <div className="mb-7 font-serif text-5xl text-champagne/80">
                     0{index + 1}
                   </div>
-                  <p className="text-xl leading-9 text-linen">
-                    {item}
-                  </p>
+                  <p className="text-xl leading-9 text-linen">{item}</p>
                 </div>
               ))}
             </div>
@@ -316,7 +319,10 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </div>
         </section>
 
-        <section id="solicita-acceso" className="scroll-mt-28 px-6 py-20 md:py-28">
+        <section
+          id="solicita-acceso"
+          className="scroll-mt-28 px-6 py-20 md:py-28"
+        >
           <div className="mx-auto max-w-4xl">
             <LeadForm copy={copy} />
           </div>
@@ -369,10 +375,27 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
             {copy.footer.legal}
           </p>
 
-          <nav className="flex gap-6 text-xs uppercase tracking-[0.22em] text-muted/80">
-            <a href="#">{copy.footer.privacy}</a>
-            <a href="#">{copy.footer.terms}</a>
-            <a href="#">{copy.footer.contact}</a>
+          <nav className="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-[0.22em] text-muted/80">
+            <a
+              href={privacyHref}
+              className="transition hover:text-champagne"
+            >
+              {copy.footer.privacy}
+            </a>
+            <a
+              href={termsHref}
+              className="transition hover:text-champagne"
+            >
+              {copy.footer.terms}
+            </a>
+            <a
+              href={copy.whatsapp.url}
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-[#25D366]"
+            >
+              {copy.footer.contact}
+            </a>
           </nav>
         </div>
       </footer>
