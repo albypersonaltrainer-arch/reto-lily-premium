@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 type PriceOption = {
   amount: string;
@@ -125,9 +124,6 @@ function SectionCard({
 }
 
 export default function LilyAdminPanelPage() {
-  const searchParams = useSearchParams();
-  const secretFromUrl = searchParams.get("secret") || "";
-
   const [secret, setSecret] = useState("");
   const [locale, setLocale] = useState<"es" | "en">("es");
   const [content, setContent] = useState<PanelContent>(EMPTY_CONTENT);
@@ -145,18 +141,23 @@ export default function LilyAdminPanelPage() {
   }, [locale, secret]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const secretFromUrl = params.get("secret") || "";
     const savedSecret = window.localStorage.getItem("lily_admin_secret") || "";
 
     if (secretFromUrl) {
       setSecret(secretFromUrl);
       window.localStorage.setItem("lily_admin_secret", secretFromUrl);
+
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState(null, "", cleanUrl);
       return;
     }
 
     if (savedSecret) {
       setSecret(savedSecret);
     }
-  }, [secretFromUrl]);
+  }, []);
 
   useEffect(() => {
     if (!secret) return;
