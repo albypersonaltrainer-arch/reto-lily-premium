@@ -8,6 +8,16 @@ type PriceOption = {
   label: string;
 };
 
+type TestimonialMediaKind = "none" | "image" | "video" | "audio";
+
+type TestimonialItem = {
+  name: string;
+  text: string;
+  type: string;
+  mediaKind: TestimonialMediaKind;
+  mediaUrl: string;
+};
+
 type PanelContent = {
   heroTitle: string;
   heroSubtitle: string;
@@ -17,6 +27,7 @@ type PanelContent = {
   coachText: string;
   learnItems: string[];
   testimonialsText: string;
+  testimonials: TestimonialItem[];
   prices: PriceOption[];
   whatsappUrl: string;
   whatsappText: string;
@@ -31,7 +42,7 @@ type ApiResponse = {
   updatedAt?: string;
 };
 
-type VideoUploadResponse = {
+type UploadResponse = {
   ok: boolean;
   error?: string;
   bucket?: string;
@@ -39,6 +50,8 @@ type VideoUploadResponse = {
   token?: string;
   signedUrl?: string;
   publicUrl?: string;
+  mediaKind?: TestimonialMediaKind;
+  mimeType?: string;
 };
 
 const EMPTY_CONTENT: PanelContent = {
@@ -50,6 +63,29 @@ const EMPTY_CONTENT: PanelContent = {
   coachText: "",
   learnItems: ["", "", ""],
   testimonialsText: "",
+  testimonials: [
+    {
+      name: "Testimonio 1",
+      text: "Aquí irá una frase real de una alumna o clienta.",
+      type: "Imagen",
+      mediaKind: "none",
+      mediaUrl: ""
+    },
+    {
+      name: "Testimonio 2",
+      text: "Espacio preparado para texto o audio corto.",
+      type: "Audio",
+      mediaKind: "none",
+      mediaUrl: ""
+    },
+    {
+      name: "Testimonio 3",
+      text: "Testimonio pendiente de añadir.",
+      type: "Vídeo",
+      mediaKind: "none",
+      mediaUrl: ""
+    }
+  ],
   prices: [
     { amount: "7$", label: "Compromiso inicial" },
     { amount: "17$", label: "Compromiso medio" },
@@ -62,6 +98,7 @@ const EMPTY_CONTENT: PanelContent = {
 };
 
 const MAX_VIDEO_SIZE_BYTES = 524288000;
+const MAX_TESTIMONIAL_FILE_SIZE_BYTES = 209715200;
 
 const ALLOWED_VIDEO_TYPES = [
   "video/mp4",
@@ -69,6 +106,47 @@ const ALLOWED_VIDEO_TYPES = [
   "video/quicktime",
   "video/x-m4v"
 ];
+
+const ALLOWED_TESTIMONIAL_FILE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/x-m4v",
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/wav",
+  "audio/webm",
+  "audio/x-wav"
+];
+
+function normalizeTestimonial(item: Partial<TestimonialItem> | undefined, index: number): TestimonialItem {
+  const fallback = EMPTY_CONTENT.testimonials[index] || {
+    name: `Testimonio ${index + 1}`,
+    text: "",
+    type: "Texto",
+    mediaKind: "none" as TestimonialMediaKind,
+    mediaUrl: ""
+  };
+
+  const mediaKind =
+    item?.mediaKind === "image" ||
+    item?.mediaKind === "video" ||
+    item?.mediaKind === "audio" ||
+    item?.mediaKind === "none"
+      ? item.mediaKind
+      : fallback.mediaKind;
+
+  return {
+    name: item?.name || fallback.name,
+    text: item?.text || fallback.text,
+    type: item?.type || fallback.type,
+    mediaKind,
+    mediaUrl: item?.mediaUrl || fallback.mediaUrl
+  };
+}
 
 function normalizeContent(content: Partial<PanelContent> | null | undefined): PanelContent {
   return {
@@ -83,6 +161,10 @@ function normalizeContent(content: Partial<PanelContent> | null | undefined): Pa
         ? [...content.learnItems, "", "", "", "", "", ""].slice(0, 6)
         : EMPTY_CONTENT.learnItems,
     testimonialsText: content?.testimonialsText || EMPTY_CONTENT.testimonialsText,
+    testimonials:
+      Array.isArray(content?.testimonials) && content.testimonials.length > 0
+        ? [0, 1, 2].map((index) => normalizeTestimonial(content.testimonials?.[index], index))
+        : EMPTY_CONTENT.testimonials,
     prices:
       Array.isArray(content?.prices) && content.prices.length > 0
         ? [...content.prices, ...EMPTY_CONTENT.prices].slice(0, 4)
@@ -179,6 +261,7 @@ async function fetchWithTimeout(
 
 export default function LilyAdminPanelPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const testimonialFileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const [secret, setSecret] = useState("");
   const [locale, setLocale] = useState<"es" | "en">("es");
@@ -190,6 +273,10 @@ export default function LilyAdminPanelPage() {
   const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
   const [videoUploadStatus, setVideoUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
   const [videoUploadMessage, setVideoUploadMessage] = useState("");
+
+  const [selectedTestimonialFiles, setSelectedTestimonialFiles] = useState<Record<number, File | null>>({});
+  const [testimonialUploadStatus, setTestimonialUploadStatus] = useState<Record<number, "idle" | "uploading" | "success" | "error">>({});
+  const [testimonialUploadMessages, setTestimonialUploadMessages] = useState<Record<number, string>>({});
 
   const apiUrl = useMemo(() => {
     const params = new URLSearchParams({
@@ -305,6 +392,27 @@ export default function LilyAdminPanelPage() {
     }
   }
 
+  function updateTestimonial(index: number, field: keyof TestimonialItem, value: string) {
+    setContent((current) => {
+      const nextTestimonials = [...current.testimonials];
+
+      nextTestimonials[index] = {
+        ...nextTestimonials[index],
+        [field]: value
+      };
+
+      return {
+        ...current,
+        testimonials: nextTestimonials
+      };
+    });
+
+    if (status === "success") {
+      setStatus("idle");
+      setMessage("");
+    }
+  }
+
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -358,7 +466,7 @@ export default function LilyAdminPanelPage() {
         })
       });
 
-      const prepareResult = (await prepareResponse.json().catch(() => null)) as VideoUploadResponse | null;
+      const prepareResult = (await prepareResponse.json().catch(() => null)) as UploadResponse | null;
 
       if (
         !prepareResponse.ok ||
@@ -414,6 +522,128 @@ export default function LilyAdminPanelPage() {
     }
   }
 
+  async function handleTestimonialUpload(index: number) {
+    const selectedFile = selectedTestimonialFiles[index];
+
+    if (!selectedFile) {
+      setTestimonialUploadStatus((current) => ({ ...current, [index]: "error" }));
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: "Selecciona primero un archivo."
+      }));
+      return;
+    }
+
+    if (!ALLOWED_TESTIMONIAL_FILE_TYPES.includes(selectedFile.type)) {
+      setTestimonialUploadStatus((current) => ({ ...current, [index]: "error" }));
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: "Formato no permitido. Usa imagen, vídeo o audio compatible."
+      }));
+      return;
+    }
+
+    if (selectedFile.size > MAX_TESTIMONIAL_FILE_SIZE_BYTES) {
+      setTestimonialUploadStatus((current) => ({ ...current, [index]: "error" }));
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: "El archivo supera el límite máximo de 200 MB."
+      }));
+      return;
+    }
+
+    setTestimonialUploadStatus((current) => ({ ...current, [index]: "uploading" }));
+    setTestimonialUploadMessages((current) => ({
+      ...current,
+      [index]: "Preparando subida segura..."
+    }));
+
+    try {
+      const prepareResponse = await fetchWithTimeout("/api/admin/reto-lily-testimonial-upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          secret,
+          fileName: selectedFile.name,
+          fileType: selectedFile.type,
+          fileSize: selectedFile.size,
+          testimonialIndex: index
+        })
+      });
+
+      const prepareResult = (await prepareResponse.json().catch(() => null)) as UploadResponse | null;
+
+      if (
+        !prepareResponse.ok ||
+        !prepareResult?.ok ||
+        !prepareResult.bucket ||
+        !prepareResult.path ||
+        !prepareResult.token ||
+        !prepareResult.publicUrl ||
+        !prepareResult.mediaKind
+      ) {
+        throw new Error(prepareResult?.error || "No se pudo preparar la subida del archivo.");
+      }
+
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: "Subiendo archivo a Supabase Storage..."
+      }));
+
+      const supabase = getSupabaseBrowserClient();
+
+      const { error: uploadError } = await supabase.storage
+        .from(prepareResult.bucket)
+        .uploadToSignedUrl(
+          prepareResult.path,
+          prepareResult.token,
+          selectedFile,
+          {
+            contentType: selectedFile.type,
+            upsert: false
+          }
+        );
+
+      if (uploadError) {
+        console.error("Supabase testimonial upload error:", uploadError);
+        throw new Error("No se pudo subir el archivo.");
+      }
+
+      updateTestimonial(index, "mediaUrl", prepareResult.publicUrl);
+      updateTestimonial(index, "mediaKind", prepareResult.mediaKind);
+      updateTestimonial(
+        index,
+        "type",
+        prepareResult.mediaKind === "image"
+          ? "Imagen"
+          : prepareResult.mediaKind === "video"
+            ? "Vídeo"
+            : "Audio"
+      );
+
+      setSelectedTestimonialFiles((current) => ({ ...current, [index]: null }));
+
+      if (testimonialFileInputRefs.current[index]) {
+        testimonialFileInputRefs.current[index]!.value = "";
+      }
+
+      setTestimonialUploadStatus((current) => ({ ...current, [index]: "success" }));
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: "Archivo subido correctamente. Pulsa “Guardar cambios” para publicarlo en la landing."
+      }));
+    } catch (error) {
+      console.error("Testimonial upload error:", error);
+      setTestimonialUploadStatus((current) => ({ ...current, [index]: "error" }));
+      setTestimonialUploadMessages((current) => ({
+        ...current,
+        [index]: error instanceof Error ? error.message : "No se pudo subir el archivo."
+      }));
+    }
+  }
+
   async function reloadSettingsAfterSave() {
     const params = new URLSearchParams({
       locale,
@@ -453,6 +683,13 @@ export default function LilyAdminPanelPage() {
         .map((item) => item.trim())
         .filter(Boolean),
       testimonialsText: content.testimonialsText.trim(),
+      testimonials: content.testimonials.map((testimonial) => ({
+        name: testimonial.name.trim(),
+        text: testimonial.text.trim(),
+        type: testimonial.type.trim(),
+        mediaKind: testimonial.mediaUrl ? testimonial.mediaKind : "none",
+        mediaUrl: testimonial.mediaUrl.trim()
+      })),
       prices: content.prices.map((price) => ({
         amount: price.amount.trim(),
         label: price.label.trim()
@@ -568,7 +805,7 @@ export default function LilyAdminPanelPage() {
             </h1>
 
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted">
-              Edita textos, vídeo, precios visibles, WhatsApp y testimonios. No toca claves de Stripe, webhooks ni configuración sensible.
+              Edita textos, vídeo, precios, WhatsApp y testimonios. No toca claves de Stripe, webhooks ni configuración sensible.
             </p>
 
             {updatedAt ? (
@@ -678,14 +915,14 @@ export default function LilyAdminPanelPage() {
             </SectionCard>
 
             <SectionCard
-              title="Vídeo"
+              title="Vídeo principal"
               subtitle="Puedes pegar una URL externa o subir un vídeo directamente desde este panel."
             >
               <div className="grid gap-6">
                 <div>
                   <FieldLabel
                     title="URL del vídeo"
-                    helper="Si subes un vídeo desde este panel, esta URL se rellenará automáticamente. También puedes pegar aquí una URL externa de YouTube no listado, Vimeo, Bunny, etc."
+                    helper="Si subes un vídeo desde este panel, esta URL se rellenará automáticamente."
                   />
                   <input
                     value={content.videoUrl}
@@ -698,7 +935,7 @@ export default function LilyAdminPanelPage() {
 
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
                   <FieldLabel
-                    title="Subir vídeo"
+                    title="Subir vídeo principal"
                     helper="Formatos permitidos: MP4, WEBM, MOV o M4V. Tamaño máximo: 500 MB."
                   />
 
@@ -818,7 +1055,7 @@ export default function LilyAdminPanelPage() {
                 </label>
               </div>
 
-              <div>
+              <div className="mb-8">
                 <FieldLabel title="Texto de introducción a testimonios" />
                 <textarea
                   value={content.testimonialsText}
@@ -827,6 +1064,200 @@ export default function LilyAdminPanelPage() {
                   maxLength={700}
                   required
                 />
+              </div>
+
+              <div className="grid gap-6">
+                {content.testimonials.map((testimonial, index) => {
+                  const selectedFile = selectedTestimonialFiles[index];
+                  const uploadStatus = testimonialUploadStatus[index] || "idle";
+                  const uploadMessage = testimonialUploadMessages[index] || "";
+
+                  return (
+                    <div
+                      key={`testimonial-${index}`}
+                      className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
+                    >
+                      <p className="mb-5 text-xs font-black uppercase tracking-[0.22em] text-champagne">
+                        Testimonio {index + 1}
+                      </p>
+
+                      <div className="grid gap-5 md:grid-cols-2">
+                        <div>
+                          <FieldLabel title="Nombre / Identificador" />
+                          <input
+                            value={testimonial.name}
+                            onChange={(event) => updateTestimonial(index, "name", event.target.value)}
+                            className="input-line mt-3 w-full text-base"
+                            maxLength={120}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <FieldLabel title="Tipo visible" helper="Ejemplo: Imagen, Audio, Vídeo, Historia." />
+                          <input
+                            value={testimonial.type}
+                            onChange={(event) => updateTestimonial(index, "type", event.target.value)}
+                            className="input-line mt-3 w-full text-base"
+                            maxLength={80}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-5">
+                        <FieldLabel title="Texto del testimonio" />
+                        <textarea
+                          value={testimonial.text}
+                          onChange={(event) => updateTestimonial(index, "text", event.target.value)}
+                          className="input-line mt-3 min-h-28 w-full resize-y text-base"
+                          maxLength={900}
+                          required
+                        />
+                      </div>
+
+                      <div className="mt-5 grid gap-5 md:grid-cols-[0.7fr_1.3fr]">
+                        <div>
+                          <FieldLabel title="Formato" />
+                          <select
+                            value={testimonial.mediaKind}
+                            onChange={(event) =>
+                              updateTestimonial(index, "mediaKind", event.target.value as TestimonialMediaKind)
+                            }
+                            className="input-line mt-3 w-full text-base"
+                          >
+                            <option value="none" className="bg-charcoal text-linen">
+                              Solo texto
+                            </option>
+                            <option value="image" className="bg-charcoal text-linen">
+                              Imagen
+                            </option>
+                            <option value="video" className="bg-charcoal text-linen">
+                              Vídeo
+                            </option>
+                            <option value="audio" className="bg-charcoal text-linen">
+                              Audio
+                            </option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <FieldLabel title="URL del archivo" helper="Se rellena automáticamente al subir archivo, o puedes pegar una URL externa." />
+                          <input
+                            value={testimonial.mediaUrl}
+                            onChange={(event) => updateTestimonial(index, "mediaUrl", event.target.value)}
+                            className="input-line mt-3 w-full text-base"
+                            maxLength={700}
+                            placeholder="https://..."
+                          />
+                        </div>
+                      </div>
+
+                      {testimonial.mediaUrl ? (
+                        <div className="mt-5 rounded-2xl border border-champagne/20 bg-champagne/5 p-4">
+                          <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-champagne">
+                            Vista previa
+                          </p>
+
+                          {testimonial.mediaKind === "image" ? (
+                            <img
+                              src={testimonial.mediaUrl}
+                              alt={testimonial.name}
+                              className="max-h-64 w-full rounded-2xl object-cover"
+                            />
+                          ) : testimonial.mediaKind === "video" ? (
+                            <video
+                              src={testimonial.mediaUrl}
+                              controls
+                              className="w-full rounded-2xl"
+                            />
+                          ) : testimonial.mediaKind === "audio" ? (
+                            <audio
+                              src={testimonial.mediaUrl}
+                              controls
+                              className="w-full"
+                            />
+                          ) : (
+                            <p className="text-sm text-muted">
+                              Archivo guardado como solo texto. Cambia el formato si quieres mostrarlo.
+                            </p>
+                          )}
+                        </div>
+                      ) : null}
+
+                      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                        <FieldLabel
+                          title="Subir archivo para este testimonio"
+                          helper="Imagen JPG/PNG/WEBP, vídeo MP4/WEBM/MOV/M4V o audio MP3/M4A/WAV/WEBM. Máximo 200 MB."
+                        />
+
+                        <input
+                          ref={(element) => {
+                            testimonialFileInputRefs.current[index] = element;
+                          }}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/x-m4v,audio/mpeg,audio/mp4,audio/wav,audio/webm,audio/x-wav"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0] || null;
+                            setSelectedTestimonialFiles((current) => ({
+                              ...current,
+                              [index]: file
+                            }));
+                            setTestimonialUploadStatus((current) => ({
+                              ...current,
+                              [index]: "idle"
+                            }));
+                            setTestimonialUploadMessages((current) => ({
+                              ...current,
+                              [index]: ""
+                            }));
+                          }}
+                          className="mt-4 block w-full cursor-pointer rounded-2xl border border-champagne/20 bg-white/[0.03] px-4 py-4 text-sm text-muted file:mr-4 file:rounded file:border-0 file:bg-gold file:px-4 file:py-3 file:text-xs file:font-black file:uppercase file:tracking-[0.18em] file:text-[#3c2f00]"
+                        />
+
+                        {selectedFile ? (
+                          <div className="mt-4 rounded-2xl border border-champagne/20 bg-champagne/5 p-4 text-sm leading-6 text-muted">
+                            <p>
+                              <strong className="text-champagne">Archivo seleccionado:</strong>{" "}
+                              {selectedFile.name}
+                            </p>
+                            <p>
+                              <strong className="text-champagne">Tamaño:</strong>{" "}
+                              {formatFileSize(selectedFile.size)}
+                            </p>
+                            <p>
+                              <strong className="text-champagne">Formato:</strong>{" "}
+                              {selectedFile.type || "No detectado"}
+                            </p>
+                          </div>
+                        ) : null}
+
+                        <button
+                          type="button"
+                          onClick={() => handleTestimonialUpload(index)}
+                          disabled={!selectedFile || uploadStatus === "uploading"}
+                          className="mt-5 rounded border border-champagne/60 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em] text-champagne transition hover:bg-champagne hover:text-[#2f250d] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {uploadStatus === "uploading" ? "Subiendo archivo..." : "Subir archivo"}
+                        </button>
+
+                        {uploadMessage ? (
+                          <p
+                            className={`mt-4 rounded-2xl border px-5 py-4 text-sm leading-6 ${
+                              uploadStatus === "success"
+                                ? "border-champagne/30 bg-champagne/5 text-champagne"
+                                : uploadStatus === "error"
+                                  ? "border-red-300/30 bg-red-500/5 text-red-200"
+                                  : "border-white/10 bg-white/[0.03] text-muted"
+                            }`}
+                          >
+                            {uploadMessage}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </SectionCard>
 
