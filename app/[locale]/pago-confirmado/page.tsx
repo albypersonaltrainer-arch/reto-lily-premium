@@ -17,35 +17,26 @@ export default function PaymentConfirmedPage({
   const locale = params.locale === "en" ? "en" : "es";
   const copy = challengeByLocale[locale as Locale];
 
-  const title =
-    locale === "es"
-      ? "Pago recibido"
-      : "Payment received";
+  const title = locale === "es" ? "Pago recibido" : "Payment received";
 
   const subtitle =
     locale === "es"
-      ? "Estamos verificando tu aportación de forma segura."
-      : "We are securely verifying your contribution.";
+      ? "Tu aportación se ha completado correctamente."
+      : "Your contribution has been completed successfully.";
 
   const text =
     locale === "es"
-      ? "Tu pago se ha completado en Stripe. En unos instantes recibirás el email definitivo con la información del reto, una vez el sistema confirme el pago automáticamente."
-      : "Your payment has been completed in Stripe. In a few moments you will receive the final email with the challenge information once the system automatically confirms the payment.";
+      ? "Tu pago se ha completado en Stripe. En unos instantes recibirás el email definitivo con el acceso y las instrucciones para empezar el reto."
+      : "Your payment has been completed in Stripe. In a few moments you will receive the final email with the access and instructions to start the challenge.";
 
   const note =
     locale === "es"
-      ? "Si no recibes el email en unos minutos, revisa spam, promociones o escríbenos por WhatsApp."
-      : "If you do not receive the email within a few minutes, check spam, promotions or contact us on WhatsApp.";
+      ? "Si no recibes el mail en unos minutos en tu bandeja de entrada, revisa la carpeta de spam. Si sigue sin aparecer, escríbenos por WhatsApp."
+      : "If you do not receive the email in your inbox within a few minutes, please check your spam folder. If it still does not appear, contact us on WhatsApp.";
 
-  const button =
-    locale === "es"
-      ? "Volver a la landing"
-      : "Back to landing";
+  const button = locale === "es" ? "Volver" : "Back";
 
-  const whatsapp =
-    locale === "es"
-      ? "Hablar por WhatsApp"
-      : "Talk on WhatsApp";
+  const whatsapp = locale === "es" ? "Hablar por WhatsApp" : "Talk on WhatsApp";
 
   return (
     <main className="invisible-pattern-shell flex min-h-screen items-center justify-center px-6 py-24 text-center">
@@ -58,7 +49,7 @@ export default function PaymentConfirmedPage({
           </div>
 
           <p className="text-xs font-black uppercase tracking-[0.32em] text-champagne">
-            {copy.brand}
+            {copy.footer.legal.replace("© 2026 Lily Camarena · ", "")}
           </p>
 
           <h1 className="mt-5 font-serif text-5xl leading-tight text-linen md:text-7xl">
@@ -95,7 +86,7 @@ export default function PaymentConfirmedPage({
               href={copy.whatsapp.url}
               target="_blank"
               rel="noreferrer"
-              className="rounded border border-champagne/60 px-8 py-4 text-xs font-bold uppercase tracking-[0.24em] text-champagne transition hover:bg-champagne hover:text-[#2f250d]"
+              className="rounded border border-[#25D366]/70 px-8 py-4 text-xs font-bold uppercase tracking-[0.24em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
             >
               {whatsapp}
             </a>
