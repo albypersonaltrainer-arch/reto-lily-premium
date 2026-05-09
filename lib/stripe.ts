@@ -2,30 +2,29 @@ import Stripe from "stripe";
 
 let stripeClient: Stripe | null = null;
 
-const ALLOWED_DONATION_AMOUNTS: Record<
-  string,
+export type DonationOption = {
+  amount: string;
+  label: string;
+};
+
+const DEFAULT_ALLOWED_DONATION_OPTIONS: DonationOption[] = [
   {
-    cents: number;
-    label: string;
-  }
-> = {
-  "7": {
-    cents: 700,
+    amount: "7$",
     label: "Compromiso inicial"
   },
-  "17": {
-    cents: 1700,
+  {
+    amount: "17$",
     label: "Compromiso medio"
   },
-  "27": {
-    cents: 2700,
+  {
+    amount: "27$",
     label: "Compromiso profundo"
   },
-  "47": {
-    cents: 4700,
+  {
+    amount: "47$",
     label: "Compromiso total"
   }
-};
+];
 
 export function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -63,20 +62,55 @@ function normalizeDonationAmount(amount: string) {
     .trim();
 }
 
-export function normalizeDonationAmountToCents(amount: string) {
+function getNumericDonationAmount(amount: string) {
   const normalizedAmount = normalizeDonationAmount(amount);
-  const donation = ALLOWED_DONATION_AMOUNTS[normalizedAmount];
+  const numericAmount = Number(normalizedAmount);
 
-  if (!donation) {
+  if (!Number.isFinite(numericAmount)) {
+    return null;
+  }
+
+  return numericAmount;
+}
+
+function findDonationOption(
+  amount: string,
+  allowedOptions: DonationOption[] = DEFAULT_ALLOWED_DONATION_OPTIONS
+) {
+  const requestedAmount = getNumericDonationAmount(amount);
+
+  if (!requestedAmount || requestedAmount < 1 || requestedAmount > 999) {
+    return null;
+  }
+
+  return (
+    allowedOptions.find((option) => {
+      const optionAmount = getNumericDonationAmount(option.amount);
+
+      return optionAmount === requestedAmount;
+    }) || null
+  );
+}
+
+export function normalizeDonationAmountToCents(
+  amount: string,
+  allowedOptions: DonationOption[] = DEFAULT_ALLOWED_DONATION_OPTIONS
+) {
+  const donation = findDonationOption(amount, allowedOptions);
+  const numericAmount = getNumericDonationAmount(amount);
+
+  if (!donation || !numericAmount) {
     throw new Error("Invalid donation amount");
   }
 
-  return donation.cents;
+  return Math.round(numericAmount * 100);
 }
 
-export function getDonationLabel(amount: string) {
-  const normalizedAmount = normalizeDonationAmount(amount);
-  const donation = ALLOWED_DONATION_AMOUNTS[normalizedAmount];
+export function getDonationLabel(
+  amount: string,
+  allowedOptions: DonationOption[] = DEFAULT_ALLOWED_DONATION_OPTIONS
+) {
+  const donation = findDonationOption(amount, allowedOptions);
 
   return donation?.label || "Aportación al reto";
 }
