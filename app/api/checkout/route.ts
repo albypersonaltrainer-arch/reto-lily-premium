@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { challengeByLocale, type Locale } from "@/config/challenge";
-import { getStripe, getDonationLabel, normalizeDonationAmountToCents } from "@/lib/stripe";
+import {
+  getStripe,
+  getDonationLabel,
+  normalizeDonationAmountToCents
+} from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const checkoutSchema = z.object({
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
             currency: "usd",
             unit_amount: amountInCents,
             product_data: {
-              name: "Reto de 3 días · Lily Camarena",
+              name: "Reto de 3 días · El Código de la Abundancia",
               description: donationLabel
             }
           }
@@ -86,6 +90,7 @@ export async function POST(request: Request) {
         locale: body.locale,
         challenge_slug: body.challengeSlug,
         donation_amount: lead.donation_amount,
+        donation_label: donationLabel,
         full_name: lead.full_name,
         email: lead.email
       }
@@ -94,7 +99,7 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from("reto_lily_leads")
       .update({
-        status: "pending_payment",
+        status: "pending_confirmation",
         payment_status: "pending",
         payment_provider: "stripe",
         stripe_checkout_session_id: checkoutSession.id
