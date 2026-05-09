@@ -7,6 +7,16 @@ import { Countdown } from "@/components/Countdown";
 import { LeadForm } from "@/components/LeadForm";
 import { VideoGate } from "@/components/VideoGate";
 
+type TestimonialMediaKind = "none" | "image" | "video" | "audio";
+
+type TestimonialWithMedia = {
+  name: string;
+  text: string;
+  type: string;
+  mediaKind?: TestimonialMediaKind;
+  mediaUrl?: string;
+};
+
 function WhatsAppIcon() {
   return (
     <svg
@@ -17,6 +27,67 @@ function WhatsAppIcon() {
     >
       <path d="M16.02 3.2C8.96 3.2 3.22 8.86 3.22 15.81c0 2.23.6 4.4 1.74 6.31L3.1 28.8l6.93-1.8a12.97 12.97 0 0 0 5.99 1.5c7.06 0 12.8-5.65 12.8-12.6S23.08 3.2 16.02 3.2Zm0 23.15c-1.9 0-3.76-.5-5.39-1.45l-.39-.23-4.12 1.07 1.1-3.9-.26-.4a10.31 10.31 0 0 1-1.6-5.53c0-5.77 4.78-10.46 10.66-10.46 5.87 0 10.65 4.69 10.65 10.46 0 5.76-4.78 10.44-10.65 10.44Zm5.84-7.82c-.32-.16-1.89-.92-2.18-1.02-.3-.1-.51-.16-.72.16-.21.31-.82 1.02-1.01 1.23-.18.2-.37.23-.69.08-.32-.16-1.34-.49-2.56-1.55-.95-.83-1.59-1.85-1.78-2.16-.18-.32-.02-.49.14-.64.14-.14.32-.36.48-.54.16-.18.21-.31.32-.52.1-.2.05-.39-.03-.54-.08-.16-.72-1.7-.99-2.33-.26-.62-.52-.53-.72-.54h-.61c-.21 0-.55.08-.84.39-.29.31-1.1 1.06-1.1 2.59s1.13 3.01 1.29 3.22c.16.2 2.23 3.35 5.4 4.7.75.32 1.34.51 1.8.65.76.24 1.44.21 1.98.13.6-.09 1.89-.76 2.16-1.49.27-.73.27-1.35.19-1.49-.08-.13-.29-.21-.61-.36Z" />
     </svg>
+  );
+}
+
+function TestimonialMedia({ item }: { item: TestimonialWithMedia }) {
+  const mediaKind = item.mediaKind || "none";
+  const mediaUrl = item.mediaUrl || "";
+
+  if (!mediaUrl || mediaKind === "none") {
+    return (
+      <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-xs uppercase tracking-[0.18em] text-champagne">
+        {item.type}
+      </div>
+    );
+  }
+
+  if (mediaKind === "image") {
+    return (
+      <div className="mb-7 overflow-hidden rounded-[1.25rem] border border-champagne/20 bg-black/25">
+        <img
+          src={mediaUrl}
+          alt={item.name}
+          className="h-64 w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  if (mediaKind === "video") {
+    return (
+      <div className="mb-7 overflow-hidden rounded-[1.25rem] border border-champagne/20 bg-black/35">
+        <video
+          src={mediaUrl}
+          controls
+          preload="metadata"
+          className="w-full"
+        />
+      </div>
+    );
+  }
+
+  if (mediaKind === "audio") {
+    return (
+      <div className="mb-7 rounded-[1.25rem] border border-champagne/20 bg-champagne/5 p-5">
+        <div className="mb-4 inline-flex rounded-full border border-champagne/30 bg-champagne/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-champagne">
+          Audio
+        </div>
+        <audio
+          src={mediaUrl}
+          controls
+          preload="metadata"
+          className="w-full"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-xs uppercase tracking-[0.18em] text-champagne">
+      {item.type}
+    </div>
   );
 }
 
@@ -35,6 +106,8 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
   const privacyHref = `/${copy.locale}/legal/privacidad`;
   const termsHref = `/${copy.locale}/legal/terminos`;
   const landingHref = `/${copy.locale}/${copy.slug}`;
+
+  const testimonials = copy.testimonials.items as TestimonialWithMedia[];
 
   return (
     <div className="invisible-pattern-shell">
@@ -80,9 +153,11 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
               />
             </div>
 
-            <p className="text-base font-black uppercase tracking-[0.38em] text-champagne md:text-xl">
-              {copy.hero.eyebrow}
-            </p>
+            {copy.hero.eyebrow ? (
+              <p className="text-base font-black uppercase tracking-[0.38em] text-champagne md:text-xl">
+                {copy.hero.eyebrow}
+              </p>
+            ) : null}
 
             <h1 className="font-serif text-5xl leading-[1.04] tracking-[-0.04em] text-linen md:text-7xl">
               {copy.hero.title}
@@ -170,11 +245,7 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
               </div>
 
               <div className="flex flex-col justify-center text-center md:text-left">
-                <p className="text-xs font-bold uppercase tracking-[0.32em] text-champagne">
-                  {copy.coach.title}
-                </p>
-
-                <h2 className="mt-5 font-serif text-5xl leading-tight text-linen md:text-6xl">
+                <h2 className="font-serif text-5xl leading-tight text-linen md:text-6xl">
                   {copy.coach.name}
                 </h2>
 
@@ -212,36 +283,38 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </div>
         </section>
 
-        <section className="px-6 py-20 md:py-28">
-          <div className="mx-auto max-w-content text-center">
-            <h2 className="font-serif text-4xl text-linen md:text-6xl">
-              {copy.testimonials.title}
-            </h2>
+        {testimonials.length > 0 ? (
+          <section className="px-6 py-20 md:py-28">
+            <div className="mx-auto max-w-content text-center">
+              <h2 className="font-serif text-4xl text-linen md:text-6xl">
+                {copy.testimonials.title}
+              </h2>
 
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted">
-              {copy.testimonials.text}
-            </p>
+              <p className="mx-auto mt-5 max-w-2xl text-lg text-muted">
+                {copy.testimonials.text}
+              </p>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {copy.testimonials.items.map((item) => (
-                <article
-                  key={item.name}
-                  className="glass-panel rounded-xl p-8 text-left"
-                >
-                  <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full border border-champagne/30 bg-champagne/10 text-xs uppercase tracking-[0.18em] text-champagne">
-                    {item.type}
-                  </div>
-                  <p className="text-lg leading-8 text-linen/90">
-                    “{item.text}”
-                  </p>
-                  <p className="mt-6 text-xs font-bold uppercase tracking-[0.24em] text-muted">
-                    {item.name}
-                  </p>
-                </article>
-              ))}
+              <div className="mt-12 grid gap-6 md:grid-cols-3">
+                {testimonials.map((item, index) => (
+                  <article
+                    key={`${item.name}-${index}`}
+                    className="glass-panel rounded-xl p-8 text-left"
+                  >
+                    <TestimonialMedia item={item} />
+
+                    <p className="text-lg leading-8 text-linen/90">
+                      “{item.text}”
+                    </p>
+
+                    <p className="mt-6 text-xs font-bold uppercase tracking-[0.24em] text-muted">
+                      {item.name}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         <section className="px-6 py-20 md:py-28">
           <div className="mx-auto max-w-content text-center">
