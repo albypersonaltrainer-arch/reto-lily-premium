@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { challengeByLocale, type ChallengeCopy, type Locale } from "@/config/challenge";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -140,6 +141,8 @@ function applyEditableSettings(
 }
 
 export async function getEditableChallengeCopy(locale: Locale): Promise<ChallengeCopy> {
+  noStore();
+
   const baseCopy = challengeByLocale[locale];
 
   try {
@@ -147,7 +150,7 @@ export async function getEditableChallengeCopy(locale: Locale): Promise<Challeng
 
     const { data, error } = await supabase
       .from("reto_lily_settings")
-      .select("content_json, is_active")
+      .select("content_json, is_active, updated_at")
       .eq("locale", locale)
       .eq("is_active", true)
       .single();
