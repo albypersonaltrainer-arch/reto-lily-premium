@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 import type { Locale } from "@/config/challenge";
 
+const WHATSAPP_URL = "https://wa.me/34686638097";
+
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return null;
@@ -44,8 +46,8 @@ function getEmailShell({
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:640px; border-collapse:collapse;">
                 <tr>
                   <td style="padding:22px 0 18px; text-align:center;">
-                    <div style="font-size:12px; letter-spacing:0.28em; text-transform:uppercase; color:#d7b85d;">
-                      Reto de 3 días
+                    <div style="font-size:20px; line-height:1.15; letter-spacing:0.24em; text-transform:uppercase; color:#f4d77b; font-weight:700;">
+                      RETO DE 3 DÍAS
                     </div>
                   </td>
                 </tr>
@@ -99,13 +101,13 @@ export async function sendPaidAccessEmail({
 
   const preview =
     locale === "es"
-      ? "Tu pago ha sido confirmado y ya tienes tu acceso al reto."
-      : "Your payment has been confirmed and your challenge access is ready.";
+      ? "Tu acceso al reto de 3 días ya está confirmado."
+      : "Your access to the 3-day challenge is now confirmed.";
 
   const content =
     locale === "es"
       ? `
-        <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:34px; line-height:1.12; color:#f4d77b; font-weight:400;">
+        <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:36px; line-height:1.12; color:#f4d77b; font-weight:400;">
           Tu acceso está confirmado
         </h1>
 
@@ -117,22 +119,43 @@ export async function sendPaidAccessEmail({
           Hemos recibido correctamente tu aportación${safeAmount ? ` de ${safeAmount} ${safeCurrency}` : ""}.
         </p>
 
-        <p style="margin:16px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Tu acceso al reto de 3 días queda confirmado. A partir de aquí, lo importante no es hacer más desde la presión, sino empezar a mirar qué patrón sigue sosteniendo el mismo resultado.
+        <p style="margin:18px 0 0; font-size:17px; line-height:1.75; color:#eee6d8;">
+          Tu acceso al reto de 3 días ya está confirmado.
         </p>
 
-        <div style="margin:28px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
+        <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          A partir de aquí, lo importante no es hacer más desde la presión.
+        </p>
+
+        <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          Es empezar a ver qué patrón sigue sosteniendo el mismo resultado.
+        </p>
+
+        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
           <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.28; color:#f4d77b;">
             Próximo paso
           </p>
-          <p style="margin:10px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Lily te enviará las instrucciones definitivas del reto por el canal correspondiente. Revisa también spam o promociones por si algún correo entra ahí.
+
+          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            En los próximos minutos recibirás el acceso y las instrucciones para empezar el reto.
+          </p>
+
+          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Importante: revisa bien tu bandeja de entrada para no perderte el acceso.
           </p>
         </div>
 
-        <p style="margin:0; font-size:15px; line-height:1.7; color:#a99f8d;">
-          Si tienes dudas antes de empezar, puedes escribir directamente por WhatsApp desde la landing.
-        </p>
+        <div style="margin:0 0 30px; padding:22px; border:1px solid rgba(37,211,102,0.28); background:rgba(37,211,102,0.07); border-radius:18px;">
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Si tienes dudas antes de empezar, puedes escribirnos directamente por WhatsApp.
+          </p>
+
+          <div style="margin-top:18px;">
+            <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:14px 20px; border-radius:999px; background:#25D366; color:#07130b; font-size:14px; line-height:1; font-weight:700; text-decoration:none;">
+              Escribir por WhatsApp
+            </a>
+          </div>
+        </div>
 
         <div style="margin:32px 0 0; padding:20px; border-left:2px solid rgba(215,184,93,0.55); background:rgba(255,255,255,0.035); border-radius:14px;">
           <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
@@ -141,7 +164,7 @@ export async function sendPaidAccessEmail({
         </div>
       `
       : `
-        <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:34px; line-height:1.12; color:#f4d77b; font-weight:400;">
+        <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:36px; line-height:1.12; color:#f4d77b; font-weight:400;">
           Your access is confirmed
         </h1>
 
@@ -153,22 +176,43 @@ export async function sendPaidAccessEmail({
           We have successfully received your contribution${safeAmount ? ` of ${safeAmount} ${safeCurrency}` : ""}.
         </p>
 
-        <p style="margin:16px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Your access to the 3-day challenge is now confirmed. From here, the important part is not doing more from pressure, but starting to see which pattern keeps sustaining the same result.
+        <p style="margin:18px 0 0; font-size:17px; line-height:1.75; color:#eee6d8;">
+          Your access to the 3-day challenge is now confirmed.
         </p>
 
-        <div style="margin:28px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
+        <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          From here, the important part is not doing more from pressure.
+        </p>
+
+        <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          It is starting to see which pattern keeps sustaining the same result.
+        </p>
+
+        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
           <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.28; color:#f4d77b;">
             Next step
           </p>
-          <p style="margin:10px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Lily will send you the final challenge instructions through the corresponding channel. Please also check spam or promotions.
+
+          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            In the next few minutes, you will receive the access and instructions to start the challenge.
+          </p>
+
+          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Important: please check your inbox carefully so you do not miss the access.
           </p>
         </div>
 
-        <p style="margin:0; font-size:15px; line-height:1.7; color:#a99f8d;">
-          If you have questions before starting, you can contact us directly through WhatsApp from the landing page.
-        </p>
+        <div style="margin:0 0 30px; padding:22px; border:1px solid rgba(37,211,102,0.28); background:rgba(37,211,102,0.07); border-radius:18px;">
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            If you have questions before starting, you can write to us directly on WhatsApp.
+          </p>
+
+          <div style="margin-top:18px;">
+            <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:14px 20px; border-radius:999px; background:#25D366; color:#07130b; font-size:14px; line-height:1; font-weight:700; text-decoration:none;">
+              Write on WhatsApp
+            </a>
+          </div>
+        </div>
 
         <div style="margin:32px 0 0; padding:20px; border-left:2px solid rgba(215,184,93,0.55); background:rgba(255,255,255,0.035); border-radius:14px;">
           <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
