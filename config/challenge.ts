@@ -104,17 +104,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     brandLogo: "/lily-camarena-logo.png",
     navCta: "Solicita tu acceso",
     hero: {
-      eyebrow: "RETO DE 3 DÍAS",
-      title: "Elimina lo que bloquea tu dinero en 3 días",
-      subtitle: "Deja de intentar manifestar más y entiende por qué lo estás frenando.",
-      intro: ""
+      eyebrow: "",
+      title: "RETO DE 3 DÍAS: EL CÓDIGO DE LA ABUNDANCIA",
+      subtitle: "Elimina lo que bloquea tu dinero en 3 días",
+      intro: "Deja de intentar manifestar más y entiende por qué lo estás frenando."
     },
     video: {
       url: "",
       placeholderText: "Vídeo de Lily · versión española",
-      helper:
-        "Este vídeo dura menos de 10 minutos. Si de verdad quieres entender qué está pasando con tu dinero, míralo hasta el final.",
-      locked: "El acceso al reto se desbloquea cuando termine la cuenta atrás.",
+      helper: "El acceso y el precio se revelarán cuando termines de ver el vídeo.",
+      locked: "El acceso al reto se desbloquea cuando termine el contador de 2 minutos.",
       unlockLabel: "El acceso al reto se desbloquea en:",
       unlockAfterSeconds: 120
     },
@@ -123,7 +122,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       name: "Lily Camarena",
       subtitle: "Si hacer más fuera la solución, ya habrías cambiado.",
       text:
-        "Lily acompaña a hombres y mujeres a trabajar en lo que sigue sosteniendo el mismo resultado, aunque lo estés intentando.",
+        "Soy esa coach que te ayuda a romper los patrones que siguen frenando tu siguiente nivel… para que por fin puedas crear la abundancia, el éxito y los resultados que sabes que estás destinad@ a tener.",
       image: "/lily-camarena-logo.png"
     },
     unlock: {
@@ -147,9 +146,12 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     donation: {
       title: "Esto no es un precio.",
       subtitle: "Es el nivel de compromiso que eliges contigo.",
-      minimum: "Prueba técnica temporal: 1$. Después volverá al mínimo oficial de 7$.",
+      minimum: "El mínimo es 7$. Puedes aportar más si realmente quieres implicarte en tu cambio.",
       options: [
-        { amount: "1$", label: "Prueba técnica" }
+        { amount: "7$", label: "Compromiso inicial" },
+        { amount: "17$", label: "Compromiso medio" },
+        { amount: "27$", label: "Compromiso profundo" },
+        { amount: "47$", label: "Compromiso total" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -159,10 +161,9 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     learn: {
       title: "En estos 3 días vas a:",
       items: [
-        "Ver exactamente qué está bloqueando tu dinero ahora mismo",
-        "Entender por qué sigues en el mismo punto aunque hagas cosas",
-        "Cambiar la forma en la que te estás relacionando con el dinero de verdad, no en teoría",
-        "Salir con un punto claro desde el que empezar a generar distinto"
+        "Descubrirás qué está haciendo que sigas manifestando escasez y limitación aunque quieras más para tu vida.",
+        "Aprenderás a dejar de manifestar desde el miedo, la necesidad o la supervivencia para empezar a generar desde otro lugar.",
+        "Abrirás espacio para más dinero, más oportunidades y una realidad más alineada con lo que realmente quieres crear."
       ]
     },
     form: {
@@ -176,19 +177,35 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       country: "País",
       amount: "Elige tu aportación",
       paymentMethod: "Método de pago preferido",
-      privacy: "Acepto la política de privacidad y el uso de mis datos para gestionar este reto.",
+      privacy:
+        "Acepto la política de privacidad y los términos y condiciones para gestionar mi acceso al reto.",
       submit: "Confirmar mi acceso",
       successTitle: "Solicitud recibida",
-      successText: "Te hemos enviado un email para confirmar tu acceso. Revisa también spam o promociones.",
-      errorText: "No hemos podido registrar tu solicitud. Revisa los datos e inténtalo de nuevo."
+      successText:
+        "Solicitud recibida. Te estamos llevando a la página segura de pago.",
+      errorText:
+        "No hemos podido registrar tu solicitud. Revisa los datos e inténtalo de nuevo."
     },
     testimonials: {
       title: "Historias reales",
-      text: "Mujeres que empezaron a mirar su relación con el dinero desde otro lugar.",
+      text:
+        "Personas que dejaron de operar desde la carencia, el miedo o el autosabotaje… y empezaron a manifestar más dinero, más oportunidades y una realidad mucho más alineada con lo que realmente querían vivir.",
       items: [
-        { name: "Testimonio 1", text: "Aquí irá una frase real de una alumna o clienta.", type: "Foto" },
-        { name: "Testimonio 2", text: "Espacio preparado para texto o audio corto.", type: "Audio" },
-        { name: "Testimonio 3", text: "Testimonio pendiente de añadir.", type: "Foto" }
+        {
+          name: "Testimonio 1",
+          text: "Aquí irá una frase real de una alumna o clienta.",
+          type: "Foto"
+        },
+        {
+          name: "Testimonio 2",
+          text: "Espacio preparado para texto o audio corto.",
+          type: "Audio"
+        },
+        {
+          name: "Testimonio 3",
+          text: "Testimonio pendiente de añadir.",
+          type: "Foto"
+        }
       ]
     },
     whatsapp: {
@@ -199,11 +216,11 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     },
     final: {
       title: "Esto no es para todo el mundo.",
-      text: "Es para quien ya está cansada de intentar y no ver resultados.",
+      text: "Es para quien ya está cansad@ de esforzarse… y no ver resultados.",
       cta: "Entrar al reto"
     },
     footer: {
-      legal: "© 2026 Lily Camarena · Reto de transformación emocional",
+      legal: "© 2026 Lily Camarena · EL CÓDIGO DE LA ABUNDANCIA",
       privacy: "Privacidad",
       terms: "Términos",
       contact: "Contacto"
@@ -217,17 +234,16 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     brandLogo: "/lily-camarena-logo.png",
     navCta: "Request access",
     hero: {
-      eyebrow: "3-DAY CHALLENGE",
-      title: "Remove what blocks your money in 3 days",
-      subtitle: "Stop trying to manifest more and understand why you may be holding it back.",
-      intro: ""
+      eyebrow: "",
+      title: "3-DAY CHALLENGE: THE ABUNDANCE CODE",
+      subtitle: "Remove what blocks your money in 3 days",
+      intro: "Stop trying to manifest more and understand why you may be holding it back."
     },
     video: {
       url: "",
       placeholderText: "Lily video · English version",
-      helper:
-        "This video is under 10 minutes. If you truly want to understand what is happening with your money, watch it until the end.",
-      locked: "Access to the challenge unlocks when the countdown finishes.",
+      helper: "Access and price will be revealed when you finish watching the video.",
+      locked: "Access to the challenge unlocks when the 2-minute countdown finishes.",
       unlockLabel: "Access to the challenge unlocks in:",
       unlockAfterSeconds: 120
     },
@@ -236,7 +252,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       name: "Lily Camarena",
       subtitle: "If doing more were the solution, you would have changed already.",
       text:
-        "Lily supports men and women in working on what keeps sustaining the same result, even when they are trying.",
+        "I am the coach who helps you break the patterns that keep holding back your next level… so you can finally create the abundance, success and results you know you are destined to have.",
       image: "/lily-camarena-logo.png"
     },
     unlock: {
@@ -260,9 +276,13 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     donation: {
       title: "This is not a price.",
       subtitle: "It is the level of commitment you choose for yourself.",
-      minimum: "Temporary technical test: $1. After testing, the official minimum will return to $7.",
+      minimum:
+        "The minimum is $7. You can contribute more if you truly want to commit to your change.",
       options: [
-        { amount: "$1", label: "Technical test" }
+        { amount: "$7", label: "Initial commitment" },
+        { amount: "$17", label: "Medium commitment" },
+        { amount: "$27", label: "Deep commitment" },
+        { amount: "$47", label: "Total commitment" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -272,15 +292,15 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     learn: {
       title: "In these 3 days you will:",
       items: [
-        "See exactly what is blocking your money right now",
-        "Understand why you remain in the same place even when you take action",
-        "Change the way you are relating to money for real, not just in theory",
-        "Leave with a clear starting point from which to begin creating differently"
+        "Discover what is making you keep manifesting scarcity and limitation even though you want more for your life.",
+        "Learn to stop manifesting from fear, need or survival so you can start generating from a different place.",
+        "Open space for more money, more opportunities and a reality more aligned with what you truly want to create."
       ]
     },
     form: {
       title: "Request your access to the challenge",
-      text: "Leave your details so we can confirm your access and send the final instructions by email.",
+      text:
+        "Leave your details so we can confirm your access and send the final instructions by email.",
       fullName: "Full name",
       email: "Email",
       phone: "WhatsApp / Phone",
@@ -288,19 +308,35 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       country: "Country",
       amount: "Choose your contribution",
       paymentMethod: "Preferred payment method",
-      privacy: "I accept the privacy policy and the use of my data to manage this challenge.",
+      privacy:
+        "I accept the privacy policy and the terms and conditions to manage my access to the challenge.",
       submit: "Confirm my access",
       successTitle: "Request received",
-      successText: "We have sent you an email to confirm your access. Please also check spam or promotions.",
-      errorText: "We could not register your request. Please review your details and try again."
+      successText:
+        "Request received. We are taking you to the secure payment page.",
+      errorText:
+        "We could not register your request. Please review your details and try again."
     },
     testimonials: {
       title: "Real stories",
-      text: "Women who started looking at their relationship with money from a different place.",
+      text:
+        "People who stopped operating from lack, fear or self-sabotage… and started manifesting more money, more opportunities and a reality much more aligned with what they truly wanted to live.",
       items: [
-        { name: "Story 1", text: "A real client sentence will go here.", type: "Photo" },
-        { name: "Story 2", text: "Prepared space for a short text or audio.", type: "Audio" },
-        { name: "Story 3", text: "Testimonial pending.", type: "Photo" }
+        {
+          name: "Story 1",
+          text: "A real client sentence will go here.",
+          type: "Photo"
+        },
+        {
+          name: "Story 2",
+          text: "Prepared space for a short text or audio.",
+          type: "Audio"
+        },
+        {
+          name: "Story 3",
+          text: "Testimonial pending.",
+          type: "Photo"
+        }
       ]
     },
     whatsapp: {
@@ -311,11 +347,11 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     },
     final: {
       title: "This is not for everyone.",
-      text: "It is for those who are tired of trying and not seeing results.",
+      text: "It is for those who are tired of making an effort… and not seeing results.",
       cta: "Enter the challenge"
     },
     footer: {
-      legal: "© 2026 Lily Camarena · Emotional transformation challenge",
+      legal: "© 2026 Lily Camarena · THE ABUNDANCE CODE",
       privacy: "Privacy",
       terms: "Terms",
       contact: "Contact"
