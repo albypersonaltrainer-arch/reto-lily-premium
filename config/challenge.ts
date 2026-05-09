@@ -147,12 +147,9 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     donation: {
       title: "Esto no es un precio.",
       subtitle: "Es el nivel de compromiso que eliges contigo.",
-      minimum: "El mínimo es 7€. Puedes aportar más si realmente quieres implicarte en tu cambio.",
+      minimum: "Prueba técnica temporal: 1$. Después volverá al mínimo oficial de 7$.",
       options: [
-        { amount: "7€", label: "Solo curiosear" },
-        { amount: "17€", label: "Quiero entender" },
-        { amount: "27€", label: "Voy en serio" },
-        { amount: "47€", label: "Estoy comprometid＠ con mi cambio" }
+        { amount: "1$", label: "Prueba técnica" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -263,12 +260,9 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
     donation: {
       title: "This is not a price.",
       subtitle: "It is the level of commitment you choose for yourself.",
-      minimum: "The minimum is €7. You can contribute more if you truly want to commit to your change.",
+      minimum: "Temporary technical test: $1. After testing, the official minimum will return to $7.",
       options: [
-        { amount: "€7", label: "Just curious" },
-        { amount: "€17", label: "I want to understand" },
-        { amount: "€27", label: "I am serious" },
-        { amount: "€47", label: "I am committed to my change" }
+        { amount: "$1", label: "Technical test" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
