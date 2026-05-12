@@ -90,6 +90,12 @@ export async function sendPaidAccessEmail({
       ? "Tu pago se ha procesado correctamente. Completa el último paso para acceder al espacio privado."
       : "Your payment has been processed successfully. Complete the final step to access the private space.";
 
+  const safeEmailHtml = `
+    <a href="mailto:${SAFE_EMAIL}" style="color:#ffffff !important; font-weight:800; text-decoration:none !important;">
+      <span style="color:#ffffff !important; font-weight:800; text-decoration:none !important;">${SAFE_EMAIL}</span>
+    </a>
+  `;
+
   const content =
     locale === "es"
       ? `
@@ -149,8 +155,8 @@ export async function sendPaidAccessEmail({
           Agrega este correo a tu lista de correos seguros para recibir correctamente todas las comunicaciones del reto:
         </p>
 
-        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff; font-weight:800;">
-          ${SAFE_EMAIL}
+        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff !important; font-weight:800;">
+          ${safeEmailHtml}
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
@@ -226,8 +232,8 @@ export async function sendPaidAccessEmail({
           Add this email to your safe sender list to receive all challenge communications correctly:
         </p>
 
-        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff; font-weight:800;">
-          ${SAFE_EMAIL}
+        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff !important; font-weight:800;">
+          ${safeEmailHtml}
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
