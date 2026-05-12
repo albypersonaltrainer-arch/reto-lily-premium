@@ -115,10 +115,6 @@ export async function sendPaidAccessEmail({
               Entrar al espacio privado
             </a>
           </div>
-
-          <p style="margin:18px 0 0; font-size:13px; line-height:1.7; color:#a99f8d; word-break:break-word;">
-            ${PRIVATE_ACCESS_URL}
-          </p>
         </div>
 
         <p style="margin:26px 0 0; font-size:16px; line-height:1.75; color:#f4d77b; font-weight:800;">
@@ -153,7 +149,7 @@ export async function sendPaidAccessEmail({
           Agrega este correo a tu lista de correos seguros para recibir correctamente todas las comunicaciones del reto:
         </p>
 
-        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#f4d77b; font-weight:800;">
+        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff; font-weight:800;">
           ${SAFE_EMAIL}
         </p>
 
@@ -162,7 +158,7 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:32px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
-          Gracias por formar parte de este proceso 🤍
+          Gracias por formar parte de esta transformación 🤍
         </p>
 
         <p style="margin:24px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
@@ -196,10 +192,6 @@ export async function sendPaidAccessEmail({
               Enter the private space
             </a>
           </div>
-
-          <p style="margin:18px 0 0; font-size:13px; line-height:1.7; color:#a99f8d; word-break:break-word;">
-            ${PRIVATE_ACCESS_URL}
-          </p>
         </div>
 
         <p style="margin:26px 0 0; font-size:16px; line-height:1.75; color:#f4d77b; font-weight:800;">
@@ -234,7 +226,7 @@ export async function sendPaidAccessEmail({
           Add this email to your safe sender list to receive all challenge communications correctly:
         </p>
 
-        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#f4d77b; font-weight:800;">
+        <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff; font-weight:800;">
           ${SAFE_EMAIL}
         </p>
 
@@ -243,7 +235,7 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:32px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
-          Thank you for being part of this process 🤍
+          Thank you for being part of this transformation 🤍
         </p>
 
         <p style="margin:24px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
