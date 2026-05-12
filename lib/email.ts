@@ -2,6 +2,9 @@ import { Resend } from "resend";
 import type { Locale } from "@/config/challenge";
 
 const WHATSAPP_URL = "https://wa.me/34686638097";
+const PRIVATE_ACCESS_URL =
+  "https://espaciolilycamarena.app.clientclub.net/communities/groups/el-código-de-la-abundancia/home?invite=6a02fa1866a3b5058f8db84f";
+const SAFE_EMAIL = "hello@lilycamarena.com";
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -60,7 +63,7 @@ function getEmailShell({
 
                 <tr>
                   <td style="padding:24px 12px 0; text-align:center; color:#8f8575; font-size:12px; line-height:1.6;">
-                    Has recibido este email porque completaste tu aportación al reto de Lily.<br />
+                    Has recibido este email porque tu pago del reto de Lily se ha procesado correctamente.<br />
                     Si tienes cualquier duda, responde a este email o contacta por WhatsApp.
                   </td>
                 </tr>
@@ -96,19 +99,19 @@ export async function sendPaidAccessEmail({
 
   const subject =
     locale === "es"
-      ? "Tu acceso al reto está confirmado"
-      : "Your challenge access is confirmed";
+      ? "Último paso para acceder al reto"
+      : "Final step to access the challenge";
 
   const preview =
     locale === "es"
-      ? "Tu acceso al reto de 3 días ya está confirmado."
-      : "Your access to the 3-day challenge is now confirmed.";
+      ? "Tu pago se ha procesado correctamente. Completa ahora el último paso para acceder al espacio privado."
+      : "Your payment has been processed successfully. Complete the final step to access the private space.";
 
   const content =
     locale === "es"
       ? `
         <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:36px; line-height:1.12; color:#f4d77b; font-weight:400;">
-          Tu acceso está confirmado
+          Último paso para acceder al reto
         </h1>
 
         <p style="margin:26px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
@@ -116,32 +119,53 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:16px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Hemos recibido correctamente tu aportación${safeAmount ? ` de ${safeAmount} ${safeCurrency}` : ""}.
+          Tu pago se ha procesado correctamente${safeAmount ? ` por importe de ${safeAmount} ${safeCurrency}` : ""}.
         </p>
 
-        <p style="margin:18px 0 0; font-size:17px; line-height:1.75; color:#eee6d8;">
-          Tu acceso al reto de 3 días ya está confirmado.
+        <div style="margin:30px 0; padding:24px; border:1px solid rgba(215,184,93,0.26); background:rgba(215,184,93,0.07); border-radius:18px;">
+          <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:25px; line-height:1.28; color:#f4d77b;">
+            Completa tu acceso al espacio privado
+          </p>
+
+          <p style="margin:14px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Ahora solo queda completar el último paso para acceder al espacio privado del reto.
+          </p>
+
+          <div style="margin-top:20px;">
+            <a href="${PRIVATE_ACCESS_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:15px 22px; border-radius:999px; background:#f4d77b; color:#2f250d; font-size:14px; line-height:1; font-weight:800; text-decoration:none;">
+              Entrar al espacio privado
+            </a>
+          </div>
+
+          <p style="margin:18px 0 0; font-size:13px; line-height:1.7; color:#a99f8d; word-break:break-word;">
+            Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
+            ${PRIVATE_ACCESS_URL}
+          </p>
+        </div>
+
+        <p style="margin:18px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          Cuando entres, regístrate con tu nombre y tu email.
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          A partir de aquí, lo importante no es hacer más desde la presión.
+          Después del registro, tu acceso quedará pendiente de aprobación manual. Las solicitudes se revisan en horario de España.
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Es empezar a ver qué patrón sigue sosteniendo el mismo resultado.
+          Si realizas el registro después de las 22:00 h (España), la aprobación podrá realizarse al día siguiente.
         </p>
 
-        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
-          <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.28; color:#f4d77b;">
-            Próximo paso
+        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.22); background:rgba(255,255,255,0.035); border-radius:18px;">
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
+            <strong style="color:#f4d77b;">Importante:</strong> agrega este correo a tu lista de correos seguros para recibir correctamente todas las comunicaciones del reto:
           </p>
 
-          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            En los próximos minutos recibirás el acceso y las instrucciones para empezar el reto.
+          <p style="margin:14px 0 0; font-size:16px; line-height:1.7; color:#f4d77b; font-weight:700;">
+            ${SAFE_EMAIL}
           </p>
 
-          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Revisa bien tu bandeja de entrada y SPAM para no perderte el acceso.
+          <p style="margin:14px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Y recuerda revisar también tu carpeta de spam o promociones.
           </p>
         </div>
 
@@ -159,13 +183,13 @@ export async function sendPaidAccessEmail({
 
         <div style="margin:32px 0 0; padding:20px; border-left:2px solid rgba(215,184,93,0.55); background:rgba(255,255,255,0.035); border-radius:14px;">
           <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
-            Si has llegado hasta aquí, no es casualidad. Ahora empieza la parte importante: mirar distinto para empezar a generar distinto.
+            Gracias por formar parte de este proceso. Nos vemos dentro.
           </p>
         </div>
       `
       : `
         <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:36px; line-height:1.12; color:#f4d77b; font-weight:400;">
-          Your access is confirmed
+          Final step to access the challenge
         </h1>
 
         <p style="margin:26px 0 0; font-size:16px; line-height:1.75; color:#eee6d8;">
@@ -173,32 +197,53 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:16px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          We have successfully received your contribution${safeAmount ? ` of ${safeAmount} ${safeCurrency}` : ""}.
+          Your payment has been processed successfully${safeAmount ? ` for ${safeAmount} ${safeCurrency}` : ""}.
         </p>
 
-        <p style="margin:18px 0 0; font-size:17px; line-height:1.75; color:#eee6d8;">
-          Your access to the 3-day challenge is now confirmed.
+        <div style="margin:30px 0; padding:24px; border:1px solid rgba(215,184,93,0.26); background:rgba(215,184,93,0.07); border-radius:18px;">
+          <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:25px; line-height:1.28; color:#f4d77b;">
+            Complete your access to the private space
+          </p>
+
+          <p style="margin:14px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            There is only one final step left to access the private challenge space.
+          </p>
+
+          <div style="margin-top:20px;">
+            <a href="${PRIVATE_ACCESS_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:15px 22px; border-radius:999px; background:#f4d77b; color:#2f250d; font-size:14px; line-height:1; font-weight:800; text-decoration:none;">
+              Enter the private space
+            </a>
+          </div>
+
+          <p style="margin:18px 0 0; font-size:13px; line-height:1.7; color:#a99f8d; word-break:break-word;">
+            If the button does not work, copy and paste this link into your browser:<br />
+            ${PRIVATE_ACCESS_URL}
+          </p>
+        </div>
+
+        <p style="margin:18px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
+          When you enter, register with your name and email.
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          From here, the important part is not doing more from pressure.
+          After registering, your access will remain pending manual approval. Requests are reviewed during Spanish working hours.
         </p>
 
         <p style="margin:14px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          It is starting to see which pattern keeps sustaining the same result.
+          If you register after 10:00 PM in Spain, your approval may be completed the following day.
         </p>
 
-        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.24); background:rgba(215,184,93,0.06); border-radius:18px;">
-          <p style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.28; color:#f4d77b;">
-            Next step
+        <div style="margin:30px 0; padding:22px; border:1px solid rgba(215,184,93,0.22); background:rgba(255,255,255,0.035); border-radius:18px;">
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
+            <strong style="color:#f4d77b;">Important:</strong> add this email to your safe sender list so you receive all challenge communications correctly:
           </p>
 
-          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            In the next few minutes, you will receive the access and instructions to start the challenge.
+          <p style="margin:14px 0 0; font-size:16px; line-height:1.7; color:#f4d77b; font-weight:700;">
+            ${SAFE_EMAIL}
           </p>
 
-          <p style="margin:12px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
-            Please check your inbox and SPAM carefully so you do not miss the access.
+          <p style="margin:14px 0 0; font-size:15px; line-height:1.7; color:#d8cfbf;">
+            Please also check your spam or promotions folder.
           </p>
         </div>
 
@@ -216,7 +261,7 @@ export async function sendPaidAccessEmail({
 
         <div style="margin:32px 0 0; padding:20px; border-left:2px solid rgba(215,184,93,0.55); background:rgba(255,255,255,0.035); border-radius:14px;">
           <p style="margin:0; font-size:15px; line-height:1.7; color:#eee6d8;">
-            If you made it this far, it is not random. Now the important part begins: seeing differently so you can start creating differently.
+            Thank you for being part of this process. See you inside.
           </p>
         </div>
       `;
