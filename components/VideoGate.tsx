@@ -11,6 +11,11 @@ type VideoGateProps = {
   onUnlocked: () => void;
 };
 
+type VideoSource = {
+  kind: "empty" | "embed" | "direct";
+  url: string;
+};
+
 function formatTime(totalSeconds: number) {
   const safeSeconds = Math.max(0, totalSeconds);
   const minutes = Math.floor(safeSeconds / 60);
@@ -19,30 +24,86 @@ function formatTime(totalSeconds: number) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-function getEmbedUrl(url: string) {
-  if (!url) return "";
+function isDirectVideoUrl(url: string) {
+  const cleanUrl = url.split("?")[0].toLowerCase();
+
+  return (
+    cleanUrl.endsWith(".mp4") ||
+    cleanUrl.endsWith(".webm") ||
+    cleanUrl.endsWith(".mov") ||
+    cleanUrl.endsWith(".m4v")
+  );
+}
+
+function getVideoSource(url: string): VideoSource {
+  const cleanInput = url.trim();
+
+  if (!cleanInput) {
+    return {
+      kind: "empty",
+      url: ""
+    };
+  }
 
   try {
-    const parsedUrl = new URL(url);
+    const parsedUrl = new URL(cleanInput);
 
     if (parsedUrl.hostname.includes("youtube.com")) {
       const videoId = parsedUrl.searchParams.get("v");
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+
+      if (videoId) {
+        return {
+          kind: "embed",
+          url: `https://www.youtube.com/embed/${videoId}`
+        };
+      }
     }
 
     if (parsedUrl.hostname.includes("youtu.be")) {
       const videoId = parsedUrl.pathname.replace("/", "");
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+
+      if (videoId) {
+        return {
+          kind: "embed",
+          url: `https://www.youtube.com/embed/${videoId}`
+        };
+      }
     }
 
     if (parsedUrl.hostname.includes("vimeo.com")) {
       const videoId = parsedUrl.pathname.split("/").filter(Boolean).pop();
-      if (videoId) return `https://player.vimeo.com/video/${videoId}`;
+
+      if (videoId) {
+        return {
+          kind: "embed",
+          url: `https://player.vimeo.com/video/${videoId}`
+        };
+      }
     }
 
-    return url;
+    if (isDirectVideoUrl(cleanInput)) {
+      return {
+        kind: "direct",
+        url: cleanInput
+      };
+    }
+
+    return {
+      kind: "direct",
+      url: cleanInput
+    };
   } catch {
-    return url;
+    if (isDirectVideoUrl(cleanInput)) {
+      return {
+        kind: "direct",
+        url: cleanInput
+      };
+    }
+
+    return {
+      kind: "empty",
+      url: ""
+    };
   }
 }
 
@@ -58,7 +119,7 @@ export function VideoGate({
   const [isUnlocked, setIsUnlocked] = useState(false);
   const hasUnlockedRef = useRef(false);
 
-  const embedUrl = useMemo(() => getEmbedUrl(url), [url]);
+  const videoSource = useMemo(() => getVideoSource(url), [url]);
 
   useEffect(() => {
     if (hasUnlockedRef.current) return;
@@ -91,13 +152,21 @@ export function VideoGate({
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-champagne/60 to-transparent" />
 
         <div className="relative aspect-video overflow-hidden rounded-[1.45rem] border border-white/10 bg-obsidian">
-          {embedUrl ? (
+          {videoSource.kind === "embed" ? (
             <iframe
-              src={embedUrl}
+              src={videoSource.url}
               title={placeholderText}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+            />
+          ) : videoSource.kind === "direct" ? (
+            <video
+              src={videoSource.url}
+              controls
+              playsInline
+              preload="metadata"
+              className="h-full w-full bg-black object-contain"
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center px-8 text-center">
