@@ -44,11 +44,11 @@ function TestimonialMedia({ item }: { item: TestimonialWithMedia }) {
 
   if (mediaKind === "image") {
     return (
-      <div className="mb-7 overflow-hidden rounded-[1.25rem] border border-champagne/20 bg-black/25">
+      <div className="mb-7 overflow-hidden rounded-[1.25rem] border border-champagne/20 bg-black/25 p-3">
         <img
           src={mediaUrl}
           alt={item.name}
-          className="h-64 w-full object-cover"
+          className="mx-auto max-h-[460px] w-full rounded-[1rem] object-contain"
           loading="lazy"
         />
       </div>
@@ -62,7 +62,8 @@ function TestimonialMedia({ item }: { item: TestimonialWithMedia }) {
           src={mediaUrl}
           controls
           preload="metadata"
-          className="w-full"
+          playsInline
+          className="w-full bg-black"
         />
       </div>
     );
@@ -449,16 +450,10 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
           </p>
 
           <nav className="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-[0.22em] text-muted/80">
-            <a
-              href={privacyHref}
-              className="transition hover:text-champagne"
-            >
+            <a href={privacyHref} className="transition hover:text-champagne">
               {copy.footer.privacy}
             </a>
-            <a
-              href={termsHref}
-              className="transition hover:text-champagne"
-            >
+            <a href={termsHref} className="transition hover:text-champagne">
               {copy.footer.terms}
             </a>
             <a
