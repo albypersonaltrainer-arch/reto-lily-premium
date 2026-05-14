@@ -331,12 +331,14 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
               {copy.donation.minimum}
             </p>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-4">
-              {copy.donation.options.map((option) => (
+            <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+              {copy.donation.options.map((option, index) => (
                 <a
-                  key={option.amount}
+                  key={`${option.amount}-${index}`}
                   href="#solicita-acceso"
-                  className="glass-panel pattern-card group rounded-xl p-8 transition duration-500 hover:-translate-y-1 hover:border-champagne/50 hover:shadow-glow"
+                  className={`glass-panel pattern-card group rounded-xl p-8 transition duration-500 hover:-translate-y-1 hover:border-champagne/50 hover:shadow-glow ${
+                    index === 1 ? "border-champagne/45 shadow-glow" : ""
+                  }`}
                 >
                   <div className="font-serif text-5xl text-linen transition group-hover:text-champagne">
                     {option.amount}
