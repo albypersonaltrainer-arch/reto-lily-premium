@@ -87,10 +87,9 @@ const EMPTY_CONTENT: PanelContent = {
     }
   ],
   prices: [
-    { amount: "7$", label: "Compromiso inicial" },
-    { amount: "17$", label: "Compromiso medio" },
-    { amount: "27$", label: "Compromiso profundo" },
-    { amount: "47$", label: "Compromiso total" }
+    { amount: "$7", label: "Quiero empezar" },
+    { amount: "$27", label: "Voy en serio" },
+    { amount: "$47", label: "Estoy comprometid@ con mi transformación" }
   ],
   whatsappUrl: "https://wa.me/34686638097",
   whatsappText: "",
@@ -167,7 +166,7 @@ function normalizeContent(content: Partial<PanelContent> | null | undefined): Pa
         : EMPTY_CONTENT.testimonials,
     prices:
       Array.isArray(content?.prices) && content.prices.length > 0
-        ? [...content.prices, ...EMPTY_CONTENT.prices].slice(0, 4)
+        ? [...content.prices, ...EMPTY_CONTENT.prices].slice(0, 3)
         : EMPTY_CONTENT.prices,
     whatsappUrl: content?.whatsappUrl || EMPTY_CONTENT.whatsappUrl,
     whatsappText: content?.whatsappText || EMPTY_CONTENT.whatsappText,
@@ -878,7 +877,7 @@ export default function LilyAdminPanelPage() {
         </div>
 
         <div className="mb-8 rounded-2xl border border-champagne/20 bg-champagne/5 p-5 text-sm leading-7 text-muted">
-          <strong className="text-champagne">Importante:</strong> los precios que guardes aquí serán los precios visibles en la landing y los precios validados para Stripe Checkout.
+          <strong className="text-champagne">Importante:</strong> los 3 precios que guardes aquí serán los precios visibles en la landing y los precios validados para Stripe Checkout.
         </div>
 
         {message ? (
@@ -978,7 +977,7 @@ export default function LilyAdminPanelPage() {
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
                   <FieldLabel
                     title="Subir vídeo principal"
-                    helper="Formatos permitidos: MP4, WEBM, MOV o M4V. Tamaño máximo: 500 MB."
+                    helper="Formatos permitidos: MP4, WEBM, MOV o M4V. Tamaño máximo: 500 MB. Si el navegador falla, sube el vídeo manualmente a Supabase Storage y pega aquí su URL pública."
                   />
 
                   <input
@@ -1215,13 +1214,14 @@ export default function LilyAdminPanelPage() {
                             <img
                               src={testimonial.mediaUrl}
                               alt={testimonial.name}
-                              className="max-h-64 w-full rounded-2xl object-cover"
+                              className="mx-auto max-h-[460px] w-full rounded-2xl object-contain"
                             />
                           ) : testimonial.mediaKind === "video" ? (
                             <video
                               src={testimonial.mediaUrl}
                               controls
-                              className="w-full rounded-2xl"
+                              playsInline
+                              className="w-full rounded-2xl bg-black"
                             />
                           ) : testimonial.mediaKind === "audio" ? (
                             <audio
@@ -1315,16 +1315,20 @@ export default function LilyAdminPanelPage() {
 
             <SectionCard
               title="Precios"
-              subtitle="Puedes cambiar importes y etiquetas. La moneda de Stripe sigue fija en USD."
+              subtitle="Solo se muestran 3 opciones en la landing. La moneda de Stripe sigue fija en USD. Usa formato $7, $27 y $47."
             >
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-3">
                 {content.prices.map((price, index) => (
                   <div
                     key={`price-${index}`}
-                    className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                    className={`rounded-2xl border p-5 ${
+                      index === 1
+                        ? "border-champagne/40 bg-champagne/10 shadow-glow"
+                        : "border-white/10 bg-black/20"
+                    }`}
                   >
                     <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-champagne">
-                      Opción {index + 1}
+                      {index === 1 ? "Opción recomendada" : `Opción ${index + 1}`}
                     </p>
 
                     <div className="grid gap-4">
