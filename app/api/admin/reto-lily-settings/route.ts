@@ -20,49 +20,26 @@ const priceSchema = z.object({
 const testimonialMediaKindSchema = z.enum(["none", "image", "video", "audio"]);
 
 const testimonialSchema = z.object({
-  name: z
-    .string()
-    .min(1, "El nombre del testimonio es obligatorio.")
-    .max(120, "El nombre del testimonio es demasiado largo."),
-  text: z
-    .string()
-    .min(1, "El texto del testimonio es obligatorio.")
-    .max(900, "El texto del testimonio es demasiado largo."),
-  type: z
-    .string()
-    .min(1, "El tipo del testimonio es obligatorio.")
-    .max(80, "El tipo del testimonio es demasiado largo."),
+  name: z.string().min(1).max(120),
+  text: z.string().min(1).max(900),
+  type: z.string().min(1).max(80),
   mediaKind: testimonialMediaKindSchema.default("none"),
-  mediaUrl: z
-    .string()
-    .max(700, "La URL del archivo es demasiado larga.")
-    .optional()
-    .default("")
+  mediaUrl: z.string().max(700).optional().default("")
 });
 
 const settingsSchema = z.object({
   heroTitle: z.string().min(3).max(180),
   heroSubtitle: z.string().min(3).max(180),
   heroIntro: z.string().max(240).optional().default(""),
-
   videoUrl: z.string().max(500).optional().default(""),
   videoHelper: z.string().min(3).max(260),
-
   coachText: z.string().min(10).max(900),
-
-  learnItems: z
-    .array(z.string().min(5).max(320))
-    .min(1)
-    .max(6),
-
+  learnItems: z.array(z.string().min(5).max(320)).min(1).max(6),
   testimonialsText: z.string().min(5).max(700),
   testimonials: z.array(testimonialSchema).min(0).max(6).optional().default([]),
-
-  prices: z.array(priceSchema).min(1).max(4),
-
+  prices: z.array(priceSchema).min(3).max(3),
   whatsappUrl: z.string().min(8).max(180),
   whatsappText: z.string().min(3).max(260),
-
   showTestimonials: z.boolean()
 });
 
@@ -74,17 +51,12 @@ const postSchema = z.object({
 
 function getExpectedSecret() {
   const secret = process.env.LILY_ADMIN_SECRET;
-
-  if (!secret) {
-    throw new Error("Missing LILY_ADMIN_SECRET environment variable");
-  }
-
+  if (!secret) throw new Error("Missing LILY_ADMIN_SECRET environment variable");
   return secret;
 }
 
 function getRequestSecret(request: Request, bodySecret?: string | null) {
   const url = new URL(request.url);
-
   return (
     bodySecret ||
     request.headers.get("x-lily-admin-secret") ||
@@ -94,10 +66,7 @@ function getRequestSecret(request: Request, bodySecret?: string | null) {
 }
 
 function isAuthorized(request: Request, bodySecret?: string | null) {
-  const receivedSecret = getRequestSecret(request, bodySecret);
-  const expectedSecret = getExpectedSecret();
-
-  return receivedSecret.length > 0 && receivedSecret === expectedSecret;
+  return getRequestSecret(request, bodySecret) === getExpectedSecret();
 }
 
 function normalizeAmountToNumber(amount: string) {
@@ -112,22 +81,21 @@ function normalizeAmountToNumber(amount: string) {
     .trim();
 
   const numeric = Number(normalized);
-
-  if (!Number.isFinite(numeric)) return null;
-
-  return numeric;
+  return Number.isFinite(numeric) ? numeric : null;
 }
 
 function validatePrices(prices: Array<{ amount: string; label: string }>) {
+  if (prices.length !== 3) {
+    throw new Error("Debe haber exactamente 3 precios.");
+  }
+
   const seenAmounts = new Set<string>();
 
   for (const price of prices) {
     const numericAmount = normalizeAmountToNumber(price.amount);
 
     if (!numericAmount || numericAmount < 1 || numericAmount > 999) {
-      throw new Error(
-        "Los precios deben ser números válidos entre 1 y 999."
-      );
+      throw new Error("Los precios deben ser números válidos entre 1 y 999.");
     }
 
     const normalizedKey = String(numericAmount);
@@ -155,7 +123,6 @@ function validateWhatsappUrl(url: string) {
 
 function validateSafeUrl(url: string, fieldName: string) {
   const trimmedUrl = url.trim();
-
   if (!trimmedUrl) return;
 
   if (
@@ -167,9 +134,7 @@ function validateSafeUrl(url: string, fieldName: string) {
   }
 }
 
-function cleanTestimonials(
-  testimonials: z.infer<typeof testimonialSchema>[]
-) {
+function cleanTestimonials(testimonials: z.infer<typeof testimonialSchema>[]) {
   return testimonials
     .map((testimonial) => {
       const mediaUrl = testimonial.mediaUrl?.trim() || "";
@@ -200,25 +165,18 @@ function cleanContent(content: z.infer<typeof settingsSchema>) {
     heroTitle: content.heroTitle.trim(),
     heroSubtitle: content.heroSubtitle.trim(),
     heroIntro: content.heroIntro?.trim() || "",
-
     videoUrl: content.videoUrl?.trim() || "",
     videoHelper: content.videoHelper.trim(),
-
     coachText: content.coachText.trim(),
-
-    learnItems: content.learnItems.map((item) => item.trim()),
-
+    learnItems: content.learnItems.map((item) => item.trim()).filter(Boolean),
     testimonialsText: content.testimonialsText.trim(),
     testimonials: cleanTestimonials(content.testimonials || []),
-
-    prices: content.prices.map((price) => ({
+    prices: content.prices.slice(0, 3).map((price) => ({
       amount: price.amount.trim(),
       label: price.label.trim()
     })),
-
     whatsappUrl: content.whatsappUrl.trim(),
     whatsappText: content.whatsappText.trim(),
-
     showTestimonials: content.showTestimonials
   };
 
@@ -232,26 +190,14 @@ function cleanContent(content: z.infer<typeof settingsSchema>) {
 export async function GET(request: Request) {
   try {
     if (!isAuthorized(request)) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "No autorizado."
-        },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 401 });
     }
 
     const url = new URL(request.url);
     const localeResult = localeSchema.safeParse(url.searchParams.get("locale") || "es");
 
     if (!localeResult.success) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Locale no válido."
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: "Locale no válido." }, { status: 400 });
     }
 
     const supabase = getSupabaseAdmin();
@@ -264,12 +210,8 @@ export async function GET(request: Request) {
 
     if (error || !data) {
       console.error("Admin settings GET error:", error);
-
       return NextResponse.json(
-        {
-          ok: false,
-          error: "No se pudo cargar la configuración."
-        },
+        { ok: false, error: "No se pudo cargar la configuración." },
         { status: 500 }
       );
     }
@@ -285,10 +227,7 @@ export async function GET(request: Request) {
     console.error("Admin settings GET request error:", error);
 
     return NextResponse.json(
-      {
-        ok: false,
-        error: "Error interno cargando la configuración."
-      },
+      { ok: false, error: "Error interno cargando la configuración." },
       { status: 500 }
     );
   }
@@ -300,17 +239,10 @@ export async function POST(request: Request) {
     const parsedBody = postSchema.parse(rawBody);
 
     if (!isAuthorized(request, parsedBody.secret || null)) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "No autorizado."
-        },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 401 });
     }
 
     const cleanedContent = cleanContent(parsedBody.content);
-
     const supabase = getSupabaseAdmin();
 
     const { data, error } = await supabase
@@ -322,9 +254,7 @@ export async function POST(request: Request) {
           is_active: true,
           updated_at: new Date().toISOString()
         },
-        {
-          onConflict: "locale"
-        }
+        { onConflict: "locale" }
       )
       .select("locale, content_json, is_active, updated_at")
       .single();
@@ -333,10 +263,7 @@ export async function POST(request: Request) {
       console.error("Admin settings POST error:", error);
 
       return NextResponse.json(
-        {
-          ok: false,
-          error: "No se pudo guardar la configuración."
-        },
+        { ok: false, error: "No se pudo guardar la configuración." },
         { status: 500 }
       );
     }
@@ -354,30 +281,17 @@ export async function POST(request: Request) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        {
-          ok: false,
-          error: "Datos no válidos.",
-          details: error.flatten()
-        },
+        { ok: false, error: "Datos no válidos.", details: error.flatten() },
         { status: 400 }
       );
     }
 
     if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: error.message
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
     }
 
     return NextResponse.json(
-      {
-        ok: false,
-        error: "Error interno guardando la configuración."
-      },
+      { ok: false, error: "Error interno guardando la configuración." },
       { status: 500 }
     );
   }
