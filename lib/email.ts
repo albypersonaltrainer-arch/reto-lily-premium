@@ -3,12 +3,27 @@ import type { Locale } from "@/config/challenge";
 
 const PRIVATE_ACCESS_URL =
   "https://espaciolilycamarena.app.clientclub.net/communities/groups/el-código-de-la-abundancia/home?invite=6a02fa1866a3b5058f8db84f";
+
 const SAFE_EMAIL = "hello@lilycamarena.com";
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return null;
+
+  if (!apiKey) {
+    throw new Error("Missing RESEND_API_KEY environment variable");
+  }
+
   return new Resend(apiKey);
+}
+
+function getEmailFrom() {
+  const from = process.env.EMAIL_FROM;
+
+  if (!from) {
+    throw new Error("Missing EMAIL_FROM environment variable");
+  }
+
+  return from;
 }
 
 function getEmailShell({
@@ -40,7 +55,7 @@ function getEmailShell({
                 <tr>
                   <td style="padding:22px 0 18px; text-align:center;">
                     <div style="font-size:20px; line-height:1.15; letter-spacing:0.24em; text-transform:uppercase; color:#f4d77b; font-weight:700;">
-                      RETO DE 3 DÍAS
+                      EL CÓDIGO DE LA ABUNDANCIA
                     </div>
                   </td>
                 </tr>
@@ -53,7 +68,7 @@ function getEmailShell({
 
                 <tr>
                   <td style="padding:24px 12px 0; text-align:center; color:#8f8575; font-size:12px; line-height:1.6;">
-                    Has recibido este email porque tu pago del reto de Lily se ha procesado correctamente.
+                    Has recibido este email porque tu pago se ha procesado correctamente.
                   </td>
                 </tr>
               </table>
@@ -76,14 +91,12 @@ export async function sendPaidAccessEmail({
   currency?: string;
 }) {
   const resend = getResend();
-  if (!resend) return;
-
-  const from = process.env.EMAIL_FROM || "Reto Lily <noreply@example.com>";
+  const from = getEmailFrom();
 
   const subject =
     locale === "es"
-      ? "Último paso para acceder al reto"
-      : "Final step to access the challenge";
+      ? "Último paso para acceder"
+      : "Final step to access";
 
   const preview =
     locale === "es"
@@ -108,12 +121,12 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:22px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Ahora solo queda completar el <strong style="color:#f4d77b;">ÚLTIMO PASO</strong> para acceder al espacio privado del reto:
+          Ahora solo queda completar el <strong style="color:#f4d77b;">ÚLTIMO PASO</strong> para acceder al espacio privado:
         </p>
 
         <div style="margin:28px 0; padding:24px; border:1px solid rgba(215,184,93,0.28); background:rgba(215,184,93,0.07); border-radius:18px;">
           <p style="margin:0; font-size:16px; line-height:1.7; color:#f4d77b; font-weight:800;">
-            ✨ ACCESO AL RETO:
+            ✨ ACCESO AL ESPACIO PRIVADO:
           </p>
 
           <div style="margin-top:18px;">
@@ -152,7 +165,7 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:8px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Agrega este correo a tu lista de correos seguros para recibir correctamente todas las comunicaciones del reto:
+          Agrega este correo a tu lista de correos seguros para recibir correctamente todas las comunicaciones:
         </p>
 
         <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff !important; font-weight:800;">
@@ -185,12 +198,12 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:22px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          There is only one <strong style="color:#f4d77b;">FINAL STEP</strong> left to access the private challenge space:
+          There is only one <strong style="color:#f4d77b;">FINAL STEP</strong> left to access the private space:
         </p>
 
         <div style="margin:28px 0; padding:24px; border:1px solid rgba(215,184,93,0.28); background:rgba(215,184,93,0.07); border-radius:18px;">
           <p style="margin:0; font-size:16px; line-height:1.7; color:#f4d77b; font-weight:800;">
-            ✨ CHALLENGE ACCESS:
+            ✨ PRIVATE SPACE ACCESS:
           </p>
 
           <div style="margin-top:18px;">
@@ -229,7 +242,7 @@ export async function sendPaidAccessEmail({
         </p>
 
         <p style="margin:8px 0 0; font-size:16px; line-height:1.75; color:#d8cfbf;">
-          Add this email to your safe sender list to receive all challenge communications correctly:
+          Add this email to your safe sender list to receive all communications correctly:
         </p>
 
         <p style="margin:14px 0 0; font-size:17px; line-height:1.75; color:#ffffff !important; font-weight:800;">
@@ -253,7 +266,7 @@ export async function sendPaidAccessEmail({
         </p>
       `;
 
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from,
     to: email,
     subject,
@@ -263,4 +276,16 @@ export async function sendPaidAccessEmail({
       content
     })
   });
+
+  if (result.error) {
+    console.error("Resend paid access email failed:", result.error);
+    throw new Error(result.error.message || "Resend email failed");
+  }
+
+  console.log("Resend paid access email accepted:", {
+    email,
+    messageId: result.data?.id
+  });
+
+  return result;
 }
