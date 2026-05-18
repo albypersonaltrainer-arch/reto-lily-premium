@@ -406,7 +406,7 @@ export function LeadForm({ copy }: LeadFormProps) {
           {copy.form.amount}
         </p>
 
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="mx-auto grid max-w-[660px] grid-cols-1 justify-center gap-3 sm:grid-cols-3">
           {copy.donation.options.map((option, index) => {
             const isSelected = selectedAmount === option.amount;
 
