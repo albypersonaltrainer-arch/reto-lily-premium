@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ChallengeCopy } from "@/config/challenge";
+import { trackInitiateCheckout } from "@/lib/meta";
 
 type LeadFormProps = {
   copy: ChallengeCopy;
@@ -191,7 +192,7 @@ const COUNTRY_OPTIONS: CountryOption[] = [
   { country: "Venezuela", dialCode: "+58" },
   { country: "Vietnam", dialCode: "+84" },
   { country: "Wallis y Futuna", dialCode: "+681" },
-  { country: "Yemen", dialCode: "+967" }
+  { country: "Yemen", dialCode: "+967" },
 ];
 
 function getOptionId(option: CountryOption) {
@@ -199,13 +200,28 @@ function getOptionId(option: CountryOption) {
 }
 
 function getOptionById(optionId: string) {
-  return COUNTRY_OPTIONS.find((option) => getOptionId(option) === optionId) || COUNTRY_OPTIONS[0];
+  return (
+    COUNTRY_OPTIONS.find((option) => getOptionId(option) === optionId) ||
+    COUNTRY_OPTIONS[0]
+  );
+}
+
+function getDonationValue(amount: string): number {
+  const normalizedAmount = amount.replace(",", ".");
+  const numericAmount = Number(normalizedAmount.replace(/[^0-9.]/g, ""));
+
+  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+    return 7;
+  }
+
+  return numericAmount;
 }
 
 export function LeadForm({ copy }: LeadFormProps) {
-  const firstDonationOption = copy.donation.options[0]?.amount || "7€";
+  const firstDonationOption = copy.donation.options[0]?.amount || "7$";
   const defaultCountryOption =
-    COUNTRY_OPTIONS.find((option) => option.country === "España") || COUNTRY_OPTIONS[0];
+    COUNTRY_OPTIONS.find((option) => option.country === "España") ||
+    COUNTRY_OPTIONS[0];
 
   const privacyHref = `/${copy.locale}/legal/privacidad`;
   const termsHref = `/${copy.locale}/legal/terminos`;
@@ -213,12 +229,18 @@ export function LeadForm({ copy }: LeadFormProps) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
-  const [selectedCountry, setSelectedCountry] = useState(defaultCountryOption.country);
-  const [selectedDialOptionId, setSelectedDialOptionId] = useState(getOptionId(defaultCountryOption));
+  const [selectedCountry, setSelectedCountry] = useState(
+    defaultCountryOption.country
+  );
+  const [selectedDialOptionId, setSelectedDialOptionId] = useState(
+    getOptionId(defaultCountryOption)
+  );
 
   function handleCountryChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const country = event.target.value;
-    const option = COUNTRY_OPTIONS.find((item) => item.country === country) || defaultCountryOption;
+    const option =
+      COUNTRY_OPTIONS.find((item) => item.country === country) ||
+      defaultCountryOption;
 
     setSelectedCountry(option.country);
     setSelectedDialOptionId(getOptionId(option));
@@ -248,16 +270,16 @@ export function LeadForm({ copy }: LeadFormProps) {
       country: selectedCountry,
       donationAmount: selectedAmount,
       paymentMethod: "stripe",
-      privacyAccepted: formData.get("privacyAccepted") === "on"
+      privacyAccepted: formData.get("privacyAccepted") === "on",
     };
 
     try {
       const leadResponse = await fetch("/api/leads", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const leadResult = await leadResponse.json().catch(() => null);
@@ -276,20 +298,32 @@ export function LeadForm({ copy }: LeadFormProps) {
       const checkoutResponse = await fetch("/api/checkout", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           leadId: leadResult.leadId,
           locale: copy.locale,
-          challengeSlug: copy.slug
-        })
+          challengeSlug: copy.slug,
+        }),
       });
 
       const checkoutResult = await checkoutResponse.json().catch(() => null);
 
-      if (!checkoutResponse.ok || checkoutResult?.ok !== true || !checkoutResult?.url) {
-        throw new Error(checkoutResult?.error || "Could not create checkout session");
+      if (
+        !checkoutResponse.ok ||
+        checkoutResult?.ok !== true ||
+        !checkoutResult?.url
+      ) {
+        throw new Error(
+          checkoutResult?.error || "Could not create checkout session"
+        );
       }
+
+      trackInitiateCheckout({
+        value: getDonationValue(selectedAmount),
+        currency: "USD",
+        contentName: "Reto Lily 3 días",
+      });
 
       window.location.href = checkoutResult.url;
     } catch (error) {
@@ -317,9 +351,7 @@ export function LeadForm({ copy }: LeadFormProps) {
           {copy.form.title}
         </h3>
 
-        <p className="mt-5 text-lg leading-8 text-muted">
-          {copy.form.text}
-        </p>
+        <p className="mt-5 text-lg leading-8 text-muted">{copy.form.text}</p>
       </div>
 
       <div className="mx-auto mt-10 grid max-w-2xl gap-5">
@@ -523,7 +555,8 @@ export function LeadForm({ copy }: LeadFormProps) {
         </button>
 
         <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-muted">
-          Después de enviar tus datos, te llevaremos a la página segura de Stripe para completar tu aportación.
+          Después de enviar tus datos, te llevaremos a la página segura de Stripe
+          para completar tu aportación.
         </p>
       </div>
 
@@ -535,7 +568,9 @@ export function LeadForm({ copy }: LeadFormProps) {
               : "border-red-300/30 bg-red-500/5 text-red-200"
           }`}
         >
-          <strong>{status === "success" ? copy.form.successTitle : "Error"}</strong>
+          <strong>
+            {status === "success" ? copy.form.successTitle : "Error"}
+          </strong>
           <p className="mt-2 text-muted">{message}</p>
         </div>
       )}
