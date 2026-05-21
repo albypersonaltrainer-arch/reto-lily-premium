@@ -25,9 +25,11 @@ export default function MetaPurchaseTracker({
       return;
     }
 
+    const verifiedSessionId = sessionId;
+
     hasStarted.current = true;
 
-    const storageKey = `meta_purchase_tracked_${sessionId}`;
+    const storageKey = `meta_purchase_tracked_${verifiedSessionId}`;
 
     if (typeof window !== "undefined") {
       const alreadyTracked = window.sessionStorage.getItem(storageKey);
@@ -41,7 +43,7 @@ export default function MetaPurchaseTracker({
       try {
         const response = await fetch(
           `/api/stripe/checkout-session?session_id=${encodeURIComponent(
-            sessionId
+            verifiedSessionId
           )}`,
           {
             method: "GET",
