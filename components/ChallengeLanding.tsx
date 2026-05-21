@@ -104,6 +104,11 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
   const chooseContributionLabel =
     copy.locale === "es" ? "Elegir aportación" : "Choose contribution";
 
+  const accessInfoLabel =
+    copy.locale === "es"
+      ? "100% online · acceso inmediato y de por vida"
+      : "100% online · instant lifetime access";
+
   const privacyHref = `/${copy.locale}/legal/privacidad`;
   const termsHref = `/${copy.locale}/legal/terminos`;
   const landingHref = `/${copy.locale}/${copy.slug}`;
@@ -173,6 +178,10 @@ export function ChallengeLanding({ copy }: { copy: ChallengeCopy }) {
                 {copy.hero.intro}
               </p>
             ) : null}
+
+            <div className="mx-auto inline-flex items-center justify-center rounded-full border border-champagne/35 bg-champagne/10 px-5 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-champagne shadow-soft md:text-xs">
+              {accessInfoLabel}
+            </div>
           </div>
         </section>
 
