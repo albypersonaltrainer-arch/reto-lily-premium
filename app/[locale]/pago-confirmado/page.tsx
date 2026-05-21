@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { challengeByLocale, type Locale } from "@/config/challenge";
+import MetaPurchaseTracker from "@/components/MetaPurchaseTracker";
 
 type PaymentConfirmedPageProps = {
   params: {
@@ -12,10 +13,11 @@ type PaymentConfirmedPageProps = {
 
 export default function PaymentConfirmedPage({
   params,
-  searchParams
+  searchParams,
 }: PaymentConfirmedPageProps) {
   const locale = params.locale === "en" ? "en" : "es";
   const copy = challengeByLocale[locale as Locale];
+  const stripeSessionId = searchParams.session_id;
 
   const title = locale === "es" ? "Pago recibido" : "Payment received";
 
@@ -40,6 +42,8 @@ export default function PaymentConfirmedPage({
 
   return (
     <main className="invisible-pattern-shell flex min-h-screen items-center justify-center px-6 py-24 text-center">
+      <MetaPurchaseTracker sessionId={stripeSessionId} />
+
       <div className="luxury-noise" />
 
       <section className="relative z-10 mx-auto max-w-3xl">
@@ -64,9 +68,9 @@ export default function PaymentConfirmedPage({
             {text}
           </p>
 
-          {searchParams.session_id ? (
+          {stripeSessionId ? (
             <p className="mx-auto mt-6 max-w-2xl break-all rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-xs leading-6 text-muted">
-              Referencia Stripe: {searchParams.session_id}
+              Referencia Stripe: {stripeSessionId}
             </p>
           ) : null}
 
