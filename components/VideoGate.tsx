@@ -110,7 +110,6 @@ function getVideoSource(url: string): VideoSource {
 export function VideoGate({
   url,
   placeholderText,
-  lockedText,
   unlockLabel,
   unlockAfterSeconds,
   onUnlocked
@@ -147,11 +146,11 @@ export function VideoGate({
 
   return (
     <div className="w-full max-w-5xl">
-      <div className="relative overflow-hidden rounded-[2rem] border border-champagne/30 bg-black/45 p-3 shadow-soft">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,215,123,0.18),transparent_44%)]" />
-        <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-champagne/60 to-transparent" />
+      <div className="relative overflow-hidden rounded-[2rem] border border-[#b78a3d]/25 bg-[#fffaf1]/90 p-3 shadow-[0_28px_90px_rgba(82,55,24,0.16)] backdrop-blur">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(216,182,106,0.22),transparent_48%)]" />
+        <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#b78a3d]/55 to-transparent" />
 
-        <div className="relative aspect-video overflow-hidden rounded-[1.45rem] border border-white/10 bg-obsidian">
+        <div className="relative aspect-video overflow-hidden rounded-[1.45rem] border border-[#6f3d2e]/15 bg-[#2d2118] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
           {videoSource.kind === "embed" ? (
             <iframe
               src={videoSource.url}
@@ -170,15 +169,15 @@ export function VideoGate({
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center px-8 text-center">
-              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-champagne/35 bg-champagne/10 text-4xl text-champagne shadow-glow">
+              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-[#d8b66a]/45 bg-[#d8b66a]/15 text-4xl text-[#ead7ae] shadow-[0_0_50px_rgba(216,182,106,0.25)]">
                 ▶
               </div>
 
-              <p className="font-serif text-3xl text-linen md:text-5xl">
+              <p className="font-serif text-3xl text-[#fffaf1] md:text-5xl">
                 {placeholderText}
               </p>
 
-              <p className="mt-5 max-w-xl text-base leading-7 text-muted">
+              <p className="mt-5 max-w-xl text-base leading-7 text-[#ead7ae]/80">
                 Aquí irá el vídeo real de Lily antes del lanzamiento.
               </p>
             </div>
@@ -186,19 +185,19 @@ export function VideoGate({
         </div>
       </div>
 
-      <div className="mx-auto mt-8 max-w-2xl rounded-[1.5rem] border border-champagne/35 bg-gradient-to-br from-champagne/12 via-white/[0.04] to-black/20 px-6 py-7 text-center shadow-soft">
-        <p className="text-xs font-black uppercase tracking-[0.3em] text-champagne">
+      <div className="mx-auto mt-8 max-w-2xl rounded-[1.7rem] border border-[#b78a3d]/30 bg-[#fffaf1]/92 px-6 py-7 text-center shadow-[0_24px_75px_rgba(82,55,24,0.15)] backdrop-blur">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#8a6428]">
           {isUnlocked ? "Acceso desbloqueado" : unlockLabel}
         </p>
 
-        <div className="mt-4 font-serif text-6xl leading-none text-linen md:text-7xl">
+        <div className="mt-4 font-serif text-6xl leading-none text-[#2d2118] md:text-7xl">
           {formatTime(remainingSeconds)}
         </div>
 
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-linen/80">
+        <p className="mx-auto mt-5 max-w-xl text-base font-semibold leading-7 text-[#4a3524]">
           {isUnlocked
             ? "Ya puedes avanzar y solicitar tu acceso al reto."
-            : lockedText}
+            : "Antes de continuar, mira este breve vídeo donde te explico cómo funciona el reto."}
         </p>
       </div>
     </div>
