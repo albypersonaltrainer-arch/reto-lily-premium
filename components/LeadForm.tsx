@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import type { ChallengeCopy } from "@/config/challenge";
 import { trackInitiateCheckout } from "@/lib/meta";
 
@@ -14,6 +15,9 @@ type CountryOption = {
   country: string;
   dialCode: string;
 };
+
+const FIXED_PRICE_AMOUNT = "$27";
+const FIXED_PRICE_VALUE = 27;
 
 const COUNTRY_OPTIONS: CountryOption[] = [
   { country: "Afganistán", dialCode: "+93" },
@@ -195,6 +199,7 @@ const COUNTRY_OPTIONS: CountryOption[] = [
   { country: "Yemen", dialCode: "+967" },
 ];
 
+
 function getOptionId(option: CountryOption) {
   return `${option.country}__${option.dialCode}`;
 }
@@ -206,19 +211,7 @@ function getOptionById(optionId: string) {
   );
 }
 
-function getDonationValue(amount: string): number {
-  const normalizedAmount = amount.replace(",", ".");
-  const numericAmount = Number(normalizedAmount.replace(/[^0-9.]/g, ""));
-
-  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-    return 7;
-  }
-
-  return numericAmount;
-}
-
 export function LeadForm({ copy }: LeadFormProps) {
-  const firstDonationOption = copy.donation.options[0]?.amount || "7$";
   const defaultCountryOption =
     COUNTRY_OPTIONS.find((option) => option.country === "España") ||
     COUNTRY_OPTIONS[0];
@@ -228,7 +221,6 @@ export function LeadForm({ copy }: LeadFormProps) {
 
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
-  const [selectedAmount, setSelectedAmount] = useState(firstDonationOption);
   const [selectedCountry, setSelectedCountry] = useState(
     defaultCountryOption.country
   );
@@ -236,7 +228,7 @@ export function LeadForm({ copy }: LeadFormProps) {
     getOptionId(defaultCountryOption)
   );
 
-  function handleCountryChange(event: React.ChangeEvent<HTMLSelectElement>) {
+  function handleCountryChange(event: ChangeEvent<HTMLSelectElement>) {
     const country = event.target.value;
     const option =
       COUNTRY_OPTIONS.find((item) => item.country === country) ||
@@ -246,7 +238,7 @@ export function LeadForm({ copy }: LeadFormProps) {
     setSelectedDialOptionId(getOptionId(option));
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const form = event.currentTarget;
@@ -268,7 +260,7 @@ export function LeadForm({ copy }: LeadFormProps) {
       phone: fullPhone,
       city: String(formData.get("city") || "").trim(),
       country: selectedCountry,
-      donationAmount: selectedAmount,
+      donationAmount: FIXED_PRICE_AMOUNT,
       paymentMethod: "stripe",
       privacyAccepted: formData.get("privacyAccepted") === "on",
     };
@@ -320,7 +312,7 @@ export function LeadForm({ copy }: LeadFormProps) {
       }
 
       trackInitiateCheckout({
-        value: getDonationValue(selectedAmount),
+        value: FIXED_PRICE_VALUE,
         currency: "USD",
         contentName: "Reto Lily 3 días",
       });
@@ -340,23 +332,43 @@ export function LeadForm({ copy }: LeadFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="glass-panel pattern-card rounded-[2rem] border-champagne/35 p-6 shadow-glow md:p-10"
+      className="rounded-[2rem] border border-[#b78a3d]/25 bg-[#fffaf1]/92 p-6 shadow-[0_28px_90px_rgba(82,55,24,0.16)] backdrop-blur md:p-10"
     >
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-black uppercase tracking-[0.32em] text-champagne">
+        <p className="text-xs font-black uppercase tracking-[0.32em] text-[#8a6428]">
           Acceso privado
         </p>
 
-        <h3 className="mt-5 font-serif text-4xl leading-tight text-linen md:text-6xl">
+        <h3 className="mt-5 font-serif text-4xl leading-tight text-[#2d2118] md:text-6xl">
           {copy.form.title}
         </h3>
 
-        <p className="mt-5 text-lg leading-8 text-muted">{copy.form.text}</p>
+        <p className="mt-5 text-lg leading-8 text-[#6c5a49]">{copy.form.text}</p>
+      </div>
+
+      <div className="mx-auto mt-9 max-w-2xl rounded-[1.6rem] border border-[#b78a3d]/25 bg-[#f3e5cf]/80 p-6 text-center shadow-[0_18px_55px_rgba(82,55,24,0.10)]">
+        <p className="text-xs font-black uppercase tracking-[0.28em] text-[#8a6428]">
+          Acceso al reto
+        </p>
+        <div className="mt-3 font-serif text-6xl leading-none text-[#2d2118] md:text-7xl">
+          {FIXED_PRICE_AMOUNT}
+        </div>
+        <div className="mx-auto mt-6 grid max-w-xl gap-3 text-left text-base font-semibold leading-7 text-[#4a3524]">
+          <p className="rounded-2xl border border-[#b78a3d]/20 bg-white/55 px-5 py-4">
+            ✔ Acceso online al reto completo de 3 días
+          </p>
+          <p className="rounded-2xl border border-[#b78a3d]/20 bg-white/55 px-5 py-4">
+            ✔ Acceso inmediato tras la inscripción
+          </p>
+          <p className="rounded-2xl border border-[#b78a3d]/20 bg-white/55 px-5 py-4">
+            ✔ Acceso disponible durante 1 año
+          </p>
+        </div>
       </div>
 
       <div className="mx-auto mt-10 grid max-w-2xl gap-5">
         <input
-          className="input-line text-base"
+          className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] placeholder:text-[#8a7a68] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
           name="fullName"
           placeholder={copy.form.fullName}
           required
@@ -365,7 +377,7 @@ export function LeadForm({ copy }: LeadFormProps) {
         />
 
         <input
-          className="input-line text-base"
+          className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] placeholder:text-[#8a7a68] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
           name="email"
           type="email"
           placeholder={copy.form.email}
@@ -375,7 +387,7 @@ export function LeadForm({ copy }: LeadFormProps) {
 
         <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr]">
           <select
-            className="input-line text-base"
+            className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
             name="country"
             value={selectedCountry}
             onChange={handleCountryChange}
@@ -386,7 +398,7 @@ export function LeadForm({ copy }: LeadFormProps) {
               <option
                 key={getOptionId(option)}
                 value={option.country}
-                className="bg-charcoal text-linen"
+                className="bg-[#fffaf1] text-[#2d2118]"
               >
                 {option.country}
               </option>
@@ -394,7 +406,7 @@ export function LeadForm({ copy }: LeadFormProps) {
           </select>
 
           <input
-            className="input-line text-base"
+            className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] placeholder:text-[#8a7a68] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
             name="city"
             placeholder={copy.form.city}
             autoComplete="address-level2"
@@ -403,7 +415,7 @@ export function LeadForm({ copy }: LeadFormProps) {
 
         <div className="grid gap-5 md:grid-cols-[0.48fr_1.52fr]">
           <select
-            className="input-line text-base"
+            className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
             name="dialCode"
             value={selectedDialOptionId}
             onChange={(event) => setSelectedDialOptionId(event.target.value)}
@@ -414,7 +426,7 @@ export function LeadForm({ copy }: LeadFormProps) {
               <option
                 key={getOptionId(option)}
                 value={getOptionId(option)}
-                className="bg-charcoal text-linen"
+                className="bg-[#fffaf1] text-[#2d2118]"
               >
                 {option.dialCode} · {option.country}
               </option>
@@ -422,7 +434,7 @@ export function LeadForm({ copy }: LeadFormProps) {
           </select>
 
           <input
-            className="input-line text-base"
+            className="rounded-2xl border border-[#b78a3d]/25 bg-white/70 px-5 py-4 text-base text-[#2d2118] placeholder:text-[#8a7a68] outline-none transition focus:border-[#b78a3d] focus:bg-white focus:ring-4 focus:ring-[#b78a3d]/15"
             name="phone"
             placeholder={copy.form.phone}
             required
@@ -433,67 +445,13 @@ export function LeadForm({ copy }: LeadFormProps) {
         </div>
       </div>
 
-      <div className="mx-auto mt-9 max-w-2xl">
-        <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.28em] text-champagne">
-          {copy.form.amount}
-        </p>
-
-        <div className="mx-auto grid max-w-[660px] grid-cols-1 justify-center gap-3 sm:grid-cols-3">
-          {copy.donation.options.map((option, index) => {
-            const isSelected = selectedAmount === option.amount;
-
-            return (
-              <label
-                key={option.amount}
-                className={`cursor-pointer rounded-2xl border p-4 text-center transition duration-300 ${
-                  isSelected
-                    ? "border-champagne bg-champagne/18 shadow-glow"
-                    : "border-champagne/20 bg-black/20 hover:border-champagne/60 hover:bg-champagne/10"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="donationAmount"
-                  value={option.amount}
-                  defaultChecked={index === 0}
-                  onChange={() => setSelectedAmount(option.amount)}
-                  className="sr-only"
-                />
-
-                <span
-                  className={`block font-serif text-3xl transition ${
-                    isSelected ? "text-champagne" : "text-linen"
-                  }`}
-                >
-                  {option.amount}
-                </span>
-
-                <span
-                  className={`mt-2 block text-[10px] font-bold uppercase tracking-[0.16em] transition ${
-                    isSelected ? "text-linen" : "text-muted"
-                  }`}
-                >
-                  {option.label}
-                </span>
-
-                {isSelected ? (
-                  <span className="mt-3 block text-[10px] font-black uppercase tracking-[0.18em] text-champagne">
-                    Seleccionado
-                  </span>
-                ) : null}
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="mx-auto mt-8 max-w-2xl">
-        <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-6 text-muted">
+        <label className="flex items-start gap-3 rounded-2xl border border-[#b78a3d]/20 bg-white/55 p-5 text-sm leading-6 text-[#5f4b3a] shadow-[0_12px_35px_rgba(82,55,24,0.08)]">
           <input
             name="privacyAccepted"
             type="checkbox"
             required
-            className="mt-1 accent-[#f2ca50]"
+            className="mt-1 accent-[#b78a3d]"
           />
           <span>
             {copy.locale === "es" ? (
@@ -503,7 +461,7 @@ export function LeadForm({ copy }: LeadFormProps) {
                   href={privacyHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                  className="font-semibold text-[#8a6428] underline decoration-[#b78a3d]/40 underline-offset-4 transition hover:text-[#5a2d22]"
                 >
                   Política de privacidad
                 </a>{" "}
@@ -512,7 +470,7 @@ export function LeadForm({ copy }: LeadFormProps) {
                   href={termsHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                  className="font-semibold text-[#8a6428] underline decoration-[#b78a3d]/40 underline-offset-4 transition hover:text-[#5a2d22]"
                 >
                   Términos y condiciones
                 </a>
@@ -525,7 +483,7 @@ export function LeadForm({ copy }: LeadFormProps) {
                   href={privacyHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                  className="font-semibold text-[#8a6428] underline decoration-[#b78a3d]/40 underline-offset-4 transition hover:text-[#5a2d22]"
                 >
                   Privacy Policy
                 </a>{" "}
@@ -534,7 +492,7 @@ export function LeadForm({ copy }: LeadFormProps) {
                   href={termsHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-champagne underline decoration-champagne/40 underline-offset-4 transition hover:text-gold"
+                  className="font-semibold text-[#8a6428] underline decoration-[#b78a3d]/40 underline-offset-4 transition hover:text-[#5a2d22]"
                 >
                   Terms and Conditions
                 </a>
@@ -549,29 +507,29 @@ export function LeadForm({ copy }: LeadFormProps) {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="btn-glow w-full rounded bg-gold px-8 py-5 text-xs font-black uppercase tracking-[0.24em] text-[#3c2f00] transition hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-60 md:w-auto md:min-w-[360px]"
+          className="w-full rounded bg-[#b78a3d] px-8 py-5 text-xs font-black uppercase tracking-[0.24em] text-white shadow-[0_16px_45px_rgba(183,138,61,0.28)] transition hover:bg-[#9a6f2d] disabled:cursor-not-allowed disabled:opacity-60 md:w-auto md:min-w-[360px]"
         >
           {status === "loading" ? "Preparando pago..." : copy.form.submit}
         </button>
 
-        <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-muted">
+        <p className="mx-auto mt-5 max-w-xl text-sm font-medium leading-6 text-[#6c5a49]">
           Después de enviar tus datos, te llevaremos a la página segura de Stripe
-          para completar tu aportación.
+          para completar tu acceso.
         </p>
       </div>
 
       {message && (
         <div
-          className={`mx-auto mt-8 max-w-2xl rounded-2xl border px-6 py-5 text-center text-sm ${
+          className={`mx-auto mt-8 max-w-2xl rounded-2xl border px-6 py-5 text-center text-sm shadow-[0_12px_35px_rgba(82,55,24,0.08)] ${
             status === "success"
-              ? "border-champagne/30 bg-champagne/5 text-champagne"
-              : "border-red-300/30 bg-red-500/5 text-red-200"
+              ? "border-[#b78a3d]/30 bg-[#f3e5cf] text-[#4a3524]"
+              : "border-red-300/60 bg-red-50 text-red-800"
           }`}
         >
           <strong>
             {status === "success" ? copy.form.successTitle : "Error"}
           </strong>
-          <p className="mt-2 text-muted">{message}</p>
+          <p className="mt-2 text-[#5f4b3a]">{message}</p>
         </div>
       )}
     </form>
