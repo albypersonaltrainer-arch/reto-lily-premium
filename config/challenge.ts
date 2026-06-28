@@ -98,22 +98,22 @@ export type ChallengeCopy = {
 export const challengeByLocale: Record<Locale, ChallengeCopy> = {
   es: {
     locale: "es",
-    slug: "reto-dinero",
-    oppositeLocalePath: "/en/money-challenge",
+    slug: "elreto",
+    oppositeLocalePath: "/en/the-challenge",
     brand: "Lily Camarena",
-    brandLogo: "/lily-camarena-logo.png",
+    brandLogo: "/stamp_negro.png",
     navCta: "Acceder ahora",
     hero: {
       eyebrow: "",
-      title: "EL CÓDIGO DE LA ABUNDANCIA",
-      subtitle: "Elimina lo que bloquea tu dinero en 3 días",
-      intro: "Deja de intentar manifestar más y entiende por qué lo estás frenando."
+      title: "EL RETO",
+      subtitle: "No estás creando desde donde crees que estás creando.",
+      intro: "Si hacer más fuera la solución, ya habrías cambiado. Descubre por qué sigues obteniendo los mismos resultados aunque lleves tiempo intentando cambiar."
     },
     video: {
       url: "",
       placeholderText: "Vídeo de Lily · versión española",
-      helper: "El acceso y el precio se revelarán cuando termines de ver el vídeo.",
-      locked: "El acceso se desbloquea cuando termine el contador de 2 minutos.",
+      helper: "Antes de continuar, mira este breve vídeo donde te explico cómo funciona el reto.",
+      locked: "Antes de continuar, mira este breve vídeo donde te explico cómo funciona el reto.",
       unlockLabel: "El acceso se desbloquea en:",
       unlockAfterSeconds: 120
     },
@@ -123,34 +123,32 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       subtitle: "Si hacer más fuera la solución, ya habrías cambiado.",
       text:
         "Soy esa coach que te ayuda a romper los patrones que siguen frenando tu siguiente nivel… para que por fin puedas crear la abundancia, el éxito y los resultados que sabes que estás destinad@ a tener.",
-      image: "/lily-camarena-logo.png"
+      image: "/stamp_negro.png"
     },
     unlock: {
-      title: "Si has llegado hasta aquí, no es casualidad.",
+      title: "Esto no va de conseguir otra técnica. Va de ver lo que todavía no estabas viendo.",
       lines: [
-        "No estás aquí por suerte.",
-        "Algo en ti ya sabe que así no puedes seguir.",
-        "Esto es la respuesta que estabas buscando.",
-        "Ahora tú decides si haces algo con ello… o sigues igual."
+        "Puedes seguir acumulando información.",
+        "O puedes empezar a mirar el lugar real desde el que estás creando tus resultados.",
+        "No estás creando desde donde crees que estás creando.",
+        "Mientras sigas jugando con el mismo personaje, tu realidad tenderá a parecerse a la anterior."
       ],
       cta: "Acceder ahora",
       note: "Si de verdad quieres que esto te sirva, no elijas desde la duda."
     },
     countdown: {
-      label: "Acceso abierto por tiempo limitado",
+      label: "Tiempo limitado",
       title: "Este acceso no va a estar abierto siempre.",
       text: "Puedes seguir dándole vueltas… o puedes empezar ahora.",
       deadlineIso: "2026-12-31T23:59:59+01:00",
       urgencyMinutes: 30
     },
     donation: {
-      title: "Esto no es un precio.",
-      subtitle: "Es el nivel de compromiso que eliges contigo.",
-      minimum: "El mínimo es $7. Puedes aportar más si realmente quieres implicarte en tu cambio.",
+      title: "Acceso al reto",
+      subtitle: "Reto online de 3 días",
+      minimum: "Acceso completo al reto online de 3 días. Acceso inmediato tras la inscripción. Acceso disponible durante 1 año.",
       options: [
-        { amount: "$7", label: "Quiero empezar" },
-        { amount: "$27", label: "Voy en serio" },
-        { amount: "$47", label: "Estoy comprometid@ con mi transformación" }
+        { amount: "$27", label: "Acceso completo" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -158,11 +156,11 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       }
     },
     learn: {
-      title: "En estos 3 días vas a:",
+      title: "Qué vivirás en El Reto",
       items: [
-        "Descubrirás qué está haciendo que sigas manifestando escasez y limitación aunque quieras más para tu vida.",
-        "Aprenderás a dejar de manifestar desde el miedo, la necesidad o la supervivencia para empezar a generar desde otro lugar.",
-        "Abrirás espacio para más dinero, más oportunidades y una realidad más alineada con lo que realmente quieres crear."
+        "Día 1 · El personaje determina la realidad que experimentas. Descubrirás por qué sigues viviendo experiencias parecidas y cómo el personaje desde el que operas las mantiene.",
+        "Día 2 · Tu personaje interpreta la realidad. Descubrirás que no reaccionas a la realidad, sino a la interpretación que hace tu personaje de ella.",
+        "Día 3 · No necesitas esforzarte más. Empezarás a elegir conscientemente el personaje desde el que quieres vivir una realidad diferente."
       ]
     },
     form: {
@@ -174,7 +172,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       phone: "WhatsApp / Teléfono",
       city: "Ciudad",
       country: "País",
-      amount: "Elige tu aportación",
+      amount: "Acceso al reto",
       paymentMethod: "Método de pago preferido",
       privacy:
         "Acepto la política de privacidad y los términos y condiciones para gestionar mi acceso.",
@@ -219,7 +217,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       cta: "Acceder ahora"
     },
     footer: {
-      legal: "© 2026 Lily Camarena · EL CÓDIGO DE LA ABUNDANCIA",
+      legal: "© 2026 Lily Camarena · EL RETO",
       privacy: "Privacidad",
       terms: "Términos",
       contact: "Contacto"
@@ -227,22 +225,22 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
   },
   en: {
     locale: "en",
-    slug: "money-challenge",
-    oppositeLocalePath: "/es/reto-dinero",
+    slug: "the-challenge",
+    oppositeLocalePath: "/es/elreto",
     brand: "Lily Camarena",
-    brandLogo: "/lily-camarena-logo.png",
+    brandLogo: "/stamp_negro.png",
     navCta: "Access now",
     hero: {
       eyebrow: "",
-      title: "THE ABUNDANCE CODE",
-      subtitle: "Remove what blocks your money in 3 days",
-      intro: "Stop trying to manifest more and understand why you may be holding it back."
+      title: "THE CHALLENGE",
+      subtitle: "You are not creating from where you think you are creating.",
+      intro: "If doing more were the solution, you would have changed already. Discover why you keep getting the same results even though you have been trying to change."
     },
     video: {
       url: "",
       placeholderText: "Lily video · English version",
-      helper: "Access and price will be revealed when you finish watching the video.",
-      locked: "Access unlocks when the 2-minute countdown finishes.",
+      helper: "Before continuing, watch this short video where I explain how the challenge works.",
+      locked: "Before continuing, watch this short video where I explain how the challenge works.",
       unlockLabel: "Access unlocks in:",
       unlockAfterSeconds: 120
     },
@@ -252,7 +250,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       subtitle: "If doing more were the solution, you would have changed already.",
       text:
         "I am the coach who helps you break the patterns that keep holding back your next level… so you can finally create the abundance, success and results you know you are destined to have.",
-      image: "/lily-camarena-logo.png"
+      image: "/stamp_negro.png"
     },
     unlock: {
       title: "If you made it this far, it is not random.",
@@ -278,9 +276,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       minimum:
         "The minimum is $7. You can contribute more if you truly want to commit to your change.",
       options: [
-        { amount: "$7", label: "I want to start" },
-        { amount: "$27", label: "I am serious" },
-        { amount: "$47", label: "I am committed to my transformation" }
+        { amount: "$27", label: "Full access" }
       ],
       paymentMethods: {
         stripe: "https://stripe.com/",
@@ -349,7 +345,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
       cta: "Access now"
     },
     footer: {
-      legal: "© 2026 Lily Camarena · THE ABUNDANCE CODE",
+      legal: "© 2026 Lily Camarena · THE CHALLENGE",
       privacy: "Privacy",
       terms: "Terms",
       contact: "Contact"
