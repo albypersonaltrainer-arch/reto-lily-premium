@@ -33,10 +33,8 @@ type EditableChallengeSettings = {
   showTestimonials?: boolean;
 };
 
-const DEFAULT_THREE_PRICES: EditablePrice[] = [
-  { amount: "$7", label: "Quiero empezar" },
-  { amount: "$27", label: "Voy en serio" },
-  { amount: "$47", label: "Estoy comprometid@ con mi transformación" }
+const DEFAULT_FIXED_PRICE: EditablePrice[] = [
+  { amount: "$27", label: "Acceso completo al reto" }
 ];
 
 function isNonEmptyString(value: unknown): value is string {
@@ -75,9 +73,7 @@ function normalizeAmountToNumber(amount: string) {
 }
 
 function sanitizePrices(value: unknown, fallback: EditablePrice[]) {
-  const safeFallback = fallback.length >= 3 ? fallback.slice(0, 3) : DEFAULT_THREE_PRICES;
-
-  if (!Array.isArray(value)) return safeFallback;
+  if (!Array.isArray(value)) return fallback;
 
   const cleaned = value
     .map((item) => {
@@ -98,9 +94,9 @@ function sanitizePrices(value: unknown, fallback: EditablePrice[]) {
       };
     })
     .filter((item): item is EditablePrice => item !== null)
-    .slice(0, 3);
+    .slice(0, 1);
 
-  return cleaned.length === 3 ? cleaned : safeFallback;
+  return cleaned.length > 0 ? cleaned : fallback;
 }
 
 function sanitizeLearnItems(value: unknown, fallback: string[]) {
@@ -201,7 +197,7 @@ function applyEditableSettings(
   baseCopy: ChallengeCopy,
   settings: EditableChallengeSettings
 ): ChallengeCopy {
-  const prices = sanitizePrices(settings.prices, DEFAULT_THREE_PRICES);
+  const prices = sanitizePrices(settings.prices, DEFAULT_FIXED_PRICE);
   const learnItems = sanitizeLearnItems(settings.learnItems, baseCopy.learn.items);
   const showTestimonials = sanitizeBoolean(settings.showTestimonials, true);
   const testimonials = sanitizeTestimonials(
@@ -247,10 +243,20 @@ function applyEditableSettings(
   };
 }
 
+function withFixedPrice(baseCopy: ChallengeCopy): ChallengeCopy {
+  return {
+    ...baseCopy,
+    donation: {
+      ...baseCopy.donation,
+      options: DEFAULT_FIXED_PRICE
+    }
+  };
+}
+
 export async function getEditableChallengeCopy(locale: Locale): Promise<ChallengeCopy> {
   noStore();
 
-  const baseCopy = challengeByLocale[locale];
+  const baseCopy = withFixedPrice(challengeByLocale[locale]);
 
   try {
     const supabase = getSupabaseAdmin();
@@ -260,20 +266,15 @@ export async function getEditableChallengeCopy(locale: Locale): Promise<Challeng
       .select("content_json, is_active, updated_at")
       .eq("locale", locale)
       .eq("is_active", true)
-      .single();
+      .maybeSingle();
 
-    if (error || !data?.content_json) {
-      if (error) {
-        console.error("Challenge settings lookup error:", error);
-      }
+    if (error) {
+      console.error("Challenge settings lookup error:", error);
+      return baseCopy;
+    }
 
-      return {
-        ...baseCopy,
-        donation: {
-          ...baseCopy.donation,
-          options: DEFAULT_THREE_PRICES
-        }
-      };
+    if (!data?.content_json) {
+      return baseCopy;
     }
 
     return applyEditableSettings(
@@ -282,13 +283,6 @@ export async function getEditableChallengeCopy(locale: Locale): Promise<Challeng
     );
   } catch (error) {
     console.error("Challenge settings fallback error:", error);
-
-    return {
-      ...baseCopy,
-      donation: {
-        ...baseCopy.donation,
-        options: DEFAULT_THREE_PRICES
-      }
-    };
+    return baseCopy;
   }
 }
