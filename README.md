@@ -16,8 +16,8 @@ Base profesional creada a partir de la primera landing de Stitch, convertida en 
 
 ## Rutas
 
-- Español: `/es/reto-dinero`
-- Inglés: `/en/money-challenge`
+- Español: `/es/codigo-origen`
+- Inglés: `/en/the-challenge`
 - Confirmación: `/es/confirmar?token=...` o `/en/confirmar?token=...`
 
 ## Instalación local

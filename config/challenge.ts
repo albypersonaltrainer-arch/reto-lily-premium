@@ -98,7 +98,7 @@ export type ChallengeCopy = {
 export const challengeByLocale: Record<Locale, ChallengeCopy> = {
   es: {
     locale: "es",
-    slug: "elreto",
+    slug: "codigo-origen",
     oppositeLocalePath: "/en/the-challenge",
     brand: "Lily Camarena",
     brandLogo: "/stamp_negro.png",
@@ -226,7 +226,7 @@ export const challengeByLocale: Record<Locale, ChallengeCopy> = {
   en: {
     locale: "en",
     slug: "the-challenge",
-    oppositeLocalePath: "/es/elreto",
+    oppositeLocalePath: "/es/codigo-origen",
     brand: "Lily Camarena",
     brandLogo: "/stamp_negro.png",
     navCta: "Access now",
