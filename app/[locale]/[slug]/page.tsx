@@ -10,8 +10,8 @@ export const fetchCache = "force-no-store";
 
 export function generateStaticParams() {
   return [
-    { locale: "es", slug: "reto-dinero" },
-    { locale: "en", slug: "money-challenge" }
+    { locale: "es", slug: "codigo-origen" },
+    { locale: "en", slug: "the-challenge" }
   ];
 }
 
@@ -26,7 +26,6 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   noStore();
 
   const locale: Locale = params.locale === "en" ? "en" : "es";
-
   const baseChallenge = getChallenge(params.locale, params.slug);
 
   if (!baseChallenge) {
