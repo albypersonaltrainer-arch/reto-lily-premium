@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Manrope, Noto_Serif } from "next/font/google";
 import { Suspense } from "react";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
 import "./globals.css";
 
@@ -29,12 +30,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const googleAnalyticsMeasurementId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
     <html lang="es" className={`${manrope.variable} ${notoSerif.variable}`}>
       <body className="font-sans antialiased">
         <Suspense fallback={null}>
           <MetaPixel pixelId={metaPixelId} />
+          <GoogleAnalytics
+            measurementId={googleAnalyticsMeasurementId}
+          />
         </Suspense>
 
         {children}
