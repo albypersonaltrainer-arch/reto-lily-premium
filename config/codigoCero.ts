@@ -6,6 +6,7 @@ export type CodigoCeroMediaConfig = {
   poster?: string;
   title: string;
   completionThreshold: number;
+  nextStepUrl: string;
 };
 
 function resolveMediaType(value?: string): CodigoCeroMediaType {
@@ -25,4 +26,6 @@ export const codigoCeroMedia: CodigoCeroMediaConfig = {
   poster: mediaType === "video" ? mediaPoster : undefined,
   title: "Código Cero",
   completionThreshold: 0.9,
+  nextStepUrl:
+    process.env.NEXT_PUBLIC_CODIGO_CERO_NEXT_STEP_URL?.trim() || "",
 };

@@ -4,7 +4,7 @@ import { codigoCeroMedia } from "@/config/codigoCero";
 
 const pageTitle = "Código Cero | Lily Camarena";
 const pageDescription =
-  "Descubre el primer paso para entender por qué sigues repitiendo los mismos resultados y qué está frenando tu siguiente nivel.";
+  "Descubre el primer paso para entender por qué sigues creando los mismos resultados y qué necesitas comprender para comenzar a cambiarlos.";
 const canonicalUrl = "https://www.lilycamarena.com/codigo-cero";
 
 export const metadata: Metadata = {
@@ -35,6 +35,7 @@ export default function CodigoCeroPage() {
       mediaPoster={codigoCeroMedia.poster}
       mediaTitle={codigoCeroMedia.title}
       completionThreshold={codigoCeroMedia.completionThreshold}
+      nextStepUrl={codigoCeroMedia.nextStepUrl}
     />
   );
 }
