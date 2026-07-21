@@ -5,6 +5,7 @@ import AdvancedPageAnalytics from "@/components/AdvancedPageAnalytics";
 import AnalyticsConsent from "@/components/AnalyticsConsent";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
+import HlsPlaybackBridge from "@/components/media/HlsPlaybackBridge";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -62,6 +63,8 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
+        <HlsPlaybackBridge />
+
         <Suspense fallback={null}>
           <GoogleAnalytics
             measurementId={googleAnalyticsMeasurementId}
