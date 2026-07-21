@@ -7,6 +7,7 @@ import {
   type MouseEvent,
 } from "react";
 import { TrackedMediaPlayer } from "@/components/media/TrackedMediaPlayer";
+import { TrackedYouTubePlayer } from "@/components/media/TrackedYouTubePlayer";
 import type { CodigoCeroMediaType } from "@/config/codigoCero";
 import {
   trackGoogleAnalyticsEvent,
@@ -23,6 +24,31 @@ type CodigoCeroLandingProps = {
   nextStepUrl: string;
 };
 
+function getYouTubeVideoId(source: string) {
+  try {
+    const url = new URL(source);
+
+    if (url.hostname === "youtu.be") {
+      return url.pathname.slice(1) || null;
+    }
+
+    if (
+      url.hostname.endsWith("youtube.com") ||
+      url.hostname.endsWith("youtube-nocookie.com")
+    ) {
+      return (
+        url.searchParams.get("v") ||
+        url.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/)?.[1] ||
+        null
+      );
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export default function CodigoCeroLanding({
   mediaType,
   mediaSrc,
@@ -34,6 +60,7 @@ export default function CodigoCeroLanding({
   const viewContentTrackedRef = useRef(false);
 
   const isVideo = mediaType === "video";
+  const youtubeVideoId = isVideo ? getYouTubeVideoId(mediaSrc) : null;
   const contentNoun = isVideo ? "vídeo" : "audio";
 
   const completionInstruction = isVideo
@@ -62,13 +89,13 @@ export default function CodigoCeroLanding({
     const parameters = {
       content_name: mediaTitle,
       content_category: "Código Cero",
-      content_type: mediaType,
+      content_type: youtubeVideoId ? "youtube" : mediaType,
       page_path: "/codigo-cero",
     };
 
     trackMetaStandardEvent("ViewContent", parameters);
     trackGoogleAnalyticsEvent("view_content", parameters);
-  }, [mediaTitle, mediaType]);
+  }, [mediaTitle, mediaType, youtubeVideoId]);
 
   function handleNextStepClick(
     event: MouseEvent<HTMLAnchorElement>
@@ -80,7 +107,7 @@ export default function CodigoCeroLanding({
     }
 
     const parameters = {
-      media_type: mediaType,
+      media_type: youtubeVideoId ? "youtube" : mediaType,
       media_title: mediaTitle,
       button_text: "SIGUIENTE PASO",
       destination_url: nextStepUrl,
@@ -131,7 +158,6 @@ export default function CodigoCeroLanding({
         </header>
 
         <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8 text-center md:py-10">
-
           <h1 className="mt-4 font-serif text-5xl leading-none tracking-[-0.04em] text-[#17130f] sm:text-6xl md:text-7xl">
             Código Cero
           </h1>
@@ -153,20 +179,26 @@ export default function CodigoCeroLanding({
 
             <div className="space-y-2">
               <p>No puedes cambiar una realidad que todavía no comprendes.</p>
-              <p>
-                Este {contentNoun} es el primer paso.
-              </p>
+              <p>Este {contentNoun} es el primer paso.</p>
             </div>
           </div>
 
           <div className="mx-auto my-12 w-full max-w-3xl sm:my-14">
-            <TrackedMediaPlayer
-              mediaType={mediaType}
-              src={mediaSrc}
-              poster={mediaPoster}
-              title={mediaTitle}
-              completionThreshold={completionThreshold}
-            />
+            {youtubeVideoId ? (
+              <TrackedYouTubePlayer
+                videoId={youtubeVideoId}
+                title={mediaTitle}
+                completionThreshold={completionThreshold}
+              />
+            ) : (
+              <TrackedMediaPlayer
+                mediaType={mediaType}
+                src={mediaSrc}
+                poster={mediaPoster}
+                title={mediaTitle}
+                completionThreshold={completionThreshold}
+              />
+            )}
           </div>
 
           <div className="mx-auto max-w-2xl">
