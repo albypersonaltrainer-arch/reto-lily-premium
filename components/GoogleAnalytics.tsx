@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -42,8 +42,10 @@ export default function GoogleAnalytics({
 
     const analyticsWindow = window as GoogleAnalyticsWindow;
 
-    analyticsWindow.gtag?.("config", measurementId, {
+    analyticsWindow.gtag?.("event", "page_view", {
       page_path: currentUrl,
+      page_location: window.location.href,
+      page_title: document.title,
     });
   }, [measurementId, pathname, searchParams]);
 
@@ -63,11 +65,13 @@ export default function GoogleAnalytics({
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
             gtag('js', new Date());
-            gtag('config', '${measurementId}');
+            gtag('config', '${measurementId}', {
+              anonymize_ip: true,
+              allow_google_signals: false,
+              allow_ad_personalization_signals: false,
+              send_page_view: true
+            });
           `,
         }}
       />

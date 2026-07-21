@@ -1,6 +1,8 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Manrope, Noto_Serif } from "next/font/google";
 import { Suspense } from "react";
+import AdvancedPageAnalytics from "@/components/AdvancedPageAnalytics";
+import AnalyticsConsent from "@/components/AnalyticsConsent";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MetaPixel from "@/components/MetaPixel";
 import "./globals.css";
@@ -24,6 +26,24 @@ export const metadata: Metadata = {
   ),
 };
 
+const consentBootstrapScript = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  var storedConsent = null;
+  try { storedConsent = localStorage.getItem('lily_analytics_consent'); } catch (error) {}
+  var consentValue = storedConsent === 'granted' ? 'granted' : 'denied';
+  gtag('consent', 'default', {
+    analytics_storage: consentValue,
+    ad_storage: consentValue,
+    ad_user_data: consentValue,
+    ad_personalization: consentValue,
+    wait_for_update: 500
+  });
+  gtag('set', 'ads_data_redaction', true);
+  gtag('set', 'url_passthrough', true);
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -31,19 +51,27 @@ export default function RootLayout({
 }) {
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const googleAnalyticsMeasurementId =
-    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-WN2P4D10SR";
 
   return (
     <html lang="es" className={`${manrope.variable} ${notoSerif.variable}`}>
+      <head>
+        <script
+          id="google-consent-default"
+          dangerouslySetInnerHTML={{ __html: consentBootstrapScript }}
+        />
+      </head>
       <body className="font-sans antialiased">
         <Suspense fallback={null}>
-          <MetaPixel pixelId={metaPixelId} />
           <GoogleAnalytics
             measurementId={googleAnalyticsMeasurementId}
           />
+          <MetaPixel pixelId={metaPixelId} />
+          <AdvancedPageAnalytics />
         </Suspense>
 
         {children}
+        <AnalyticsConsent />
       </body>
     </html>
   );
