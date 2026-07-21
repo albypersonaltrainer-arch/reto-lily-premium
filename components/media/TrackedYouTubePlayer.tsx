@@ -48,12 +48,18 @@ type TrackedYouTubePlayerProps = {
 const MILESTONES = [25, 50, 75, 90] as const;
 const API_SCRIPT_ID = "youtube-iframe-api";
 
+let youtubeApiPromise: Promise<YouTubeNamespace> | null = null;
+
 function loadYouTubeApi(): Promise<YouTubeNamespace> {
   if (window.YT?.Player) {
     return Promise.resolve(window.YT);
   }
 
-  return new Promise((resolve) => {
+  if (youtubeApiPromise) {
+    return youtubeApiPromise;
+  }
+
+  youtubeApiPromise = new Promise((resolve) => {
     const previousReady = window.onYouTubeIframeAPIReady;
 
     window.onYouTubeIframeAPIReady = () => {
@@ -71,6 +77,8 @@ function loadYouTubeApi(): Promise<YouTubeNamespace> {
       document.head.appendChild(script);
     }
   });
+
+  return youtubeApiPromise;
 }
 
 export function TrackedYouTubePlayer({
@@ -83,6 +91,7 @@ export function TrackedYouTubePlayer({
   const timerRef = useRef<number | null>(null);
   const startedRef = useRef(false);
   const completedRef = useRef(false);
+  const progressRef = useRef(0);
   const trackedMilestonesRef = useRef<Set<number>>(new Set());
   const [progress, setProgress] = useState(0);
   const [hasError, setHasError] = useState(false);
@@ -111,6 +120,18 @@ export function TrackedYouTubePlayer({
       };
     }
 
+    function registerCompletion(player: YouTubePlayer, percentage: number) {
+      if (completedRef.current) {
+        return;
+      }
+
+      completedRef.current = true;
+      const parameters = buildParameters(player, percentage);
+      trackUnifiedCustomEvent("codigo_cero_media_consumida", parameters);
+      trackUnifiedCustomEvent("codigo_cero_visto", parameters);
+      trackUnifiedCustomEvent("codigo_cero_media_completed", parameters);
+    }
+
     function updateProgress(player: YouTubePlayer) {
       const duration = player.getDuration();
       if (!Number.isFinite(duration) || duration <= 0) {
@@ -122,6 +143,7 @@ export function TrackedYouTubePlayer({
         Math.max(0, (player.getCurrentTime() / duration) * 100)
       );
       const rounded = Math.round(percentage);
+      progressRef.current = rounded;
       setProgress(rounded);
 
       for (const milestone of MILESTONES) {
@@ -137,15 +159,8 @@ export function TrackedYouTubePlayer({
         }
       }
 
-      if (
-        rounded >= Math.round(completionThreshold * 100) &&
-        !completedRef.current
-      ) {
-        completedRef.current = true;
-        const parameters = buildParameters(player, rounded);
-        trackUnifiedCustomEvent("codigo_cero_media_consumida", parameters);
-        trackUnifiedCustomEvent("codigo_cero_visto", parameters);
-        trackUnifiedCustomEvent("codigo_cero_media_completed", parameters);
+      if (rounded >= Math.round(completionThreshold * 100)) {
+        registerCompletion(player, rounded);
       }
     }
 
@@ -180,12 +195,12 @@ export function TrackedYouTubePlayer({
                 startedRef.current = true;
                 trackUnifiedCustomEvent(
                   "codigo_cero_media_start",
-                  buildParameters(target, progress)
+                  buildParameters(target, progressRef.current)
                 );
               } else {
                 trackUnifiedCustomEvent(
                   "codigo_cero_youtube_resume",
-                  buildParameters(target, progress)
+                  buildParameters(target, progressRef.current)
                 );
               }
 
@@ -202,32 +217,23 @@ export function TrackedYouTubePlayer({
               stopTimer();
               trackUnifiedCustomEvent(
                 "codigo_cero_youtube_pause",
-                buildParameters(target, progress)
+                buildParameters(target, progressRef.current)
               );
               return;
             }
 
             if (data === 0) {
-              updateProgress(target);
+              progressRef.current = 100;
+              setProgress(100);
               stopTimer();
-
-              if (!completedRef.current) {
-                completedRef.current = true;
-                const parameters = buildParameters(target, 100);
-                trackUnifiedCustomEvent("codigo_cero_media_consumida", parameters);
-                trackUnifiedCustomEvent("codigo_cero_visto", parameters);
-                trackUnifiedCustomEvent(
-                  "codigo_cero_media_completed",
-                  parameters
-                );
-              }
+              registerCompletion(target, 100);
             }
           },
           onError: ({ data, target }) => {
             setHasError(true);
             stopTimer();
             trackUnifiedCustomEvent("codigo_cero_media_error", {
-              ...buildParameters(target, progress),
+              ...buildParameters(target, progressRef.current),
               youtube_error_code: data,
             });
           },
@@ -241,7 +247,7 @@ export function TrackedYouTubePlayer({
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, [completionThreshold, progress, title, videoId]);
+  }, [completionThreshold, title, videoId]);
 
   return (
     <div className="w-full">
