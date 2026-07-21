@@ -10,7 +10,7 @@ export type CodigoCeroMediaConfig = {
 };
 
 const DEFAULT_CODIGO_CERO_VIDEO_URL =
-  "https://fqjtmpsdrocejlgiogss.supabase.co/storage/v1/object/public/codigo-cero-hls-v1/master.m3u8";
+  "https://www.youtube.com/watch?v=wgfzu3BBxfM";
 
 const DEFAULT_CODIGO_CERO_NEXT_STEP_URL =
   "https://www.lilycamarena.com/es/codigo-origen";
