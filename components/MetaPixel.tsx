@@ -2,7 +2,13 @@
 
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ANALYTICS_CONSENT_EVENT,
+  readStoredAnalyticsConsent,
+  type AnalyticsConsentValue,
+} from "@/components/AnalyticsConsent";
+import { flushPendingMetaEvents } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -18,13 +24,31 @@ type MetaPixelProps = {
 export default function MetaPixel({ pixelId }: MetaPixelProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [hasConsent, setHasConsent] = useState(false);
   const initialPageViewSkipped = useRef(false);
   const lastTrackedUrl = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!pixelId || typeof window === "undefined" || !window.fbq) {
+    setHasConsent(readStoredAnalyticsConsent() === "granted");
+
+    function handleConsent(event: Event) {
+      const consentEvent = event as CustomEvent<AnalyticsConsentValue>;
+      setHasConsent(consentEvent.detail === "granted");
+    }
+
+    window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
+
+    return () => {
+      window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pixelId || !hasConsent || typeof window === "undefined" || !window.fbq) {
       return;
     }
+
+    flushPendingMetaEvents();
 
     const queryString = searchParams?.toString();
     const currentUrl = `${pathname}${queryString ? `?${queryString}` : ""}`;
@@ -41,9 +65,9 @@ export default function MetaPixel({ pixelId }: MetaPixelProps) {
 
     lastTrackedUrl.current = currentUrl;
     window.fbq("track", "PageView");
-  }, [pixelId, pathname, searchParams]);
+  }, [hasConsent, pixelId, pathname, searchParams]);
 
-  if (!pixelId) {
+  if (!pixelId || !hasConsent) {
     return null;
   }
 
@@ -52,6 +76,7 @@ export default function MetaPixel({ pixelId }: MetaPixelProps) {
       <Script
         id="meta-pixel-base"
         strategy="afterInteractive"
+        onLoad={flushPendingMetaEvents}
         dangerouslySetInnerHTML={{
           __html: `
             !function(f,b,e,v,n,t,s)
