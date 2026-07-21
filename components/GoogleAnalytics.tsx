@@ -4,8 +4,6 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-const CONSENT_STORAGE_KEY = "lily_analytics_consent";
-
 type GoogleAnalyticsProps = {
   measurementId?: string;
 };
@@ -57,30 +55,6 @@ export default function GoogleAnalytics({
 
   return (
     <>
-      <Script
-        id="google-consent-default"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            var storedConsent = null;
-            try { storedConsent = localStorage.getItem('${CONSENT_STORAGE_KEY}'); } catch (error) {}
-            var consentValue = storedConsent === 'granted' ? 'granted' : 'denied';
-            gtag('consent', 'default', {
-              analytics_storage: consentValue,
-              ad_storage: consentValue,
-              ad_user_data: consentValue,
-              ad_personalization: consentValue,
-              wait_for_update: 500
-            });
-            gtag('set', 'ads_data_redaction', true);
-            gtag('set', 'url_passthrough', true);
-          `,
-        }}
-      />
-
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
         strategy="afterInteractive"
