@@ -20,10 +20,12 @@ type TrackedMediaPlayerProps = {
   poster?: string;
   title: string;
   completionThreshold?: number;
+  onProgress?: (percentage: number) => void;
   onCompleted?: () => void;
 };
 
 const MAX_NATURAL_TIME_JUMP_SECONDS = 3;
+const MEDIA_MILESTONES = [25, 50, 75, 90] as const;
 
 export function TrackedMediaPlayer({
   mediaType,
@@ -31,61 +33,124 @@ export function TrackedMediaPlayer({
   poster,
   title,
   completionThreshold = 0.9,
+  onProgress,
   onCompleted,
 }: TrackedMediaPlayerProps) {
-  const mediaRef = useRef<HTMLMediaElement | null>(null);
   const consumedSecondsRef = useRef<Set<number>>(new Set());
+  const trackedMilestonesRef = useRef<Set<number>>(new Set());
   const lastPlaybackTimeRef = useRef<number | null>(null);
   const isSeekingRef = useRef(false);
+  const hasStartedRef = useRef(false);
   const hasCompletedRef = useRef(false);
+  const hasTrackedErrorRef = useRef(false);
 
   const [consumedPercentage, setConsumedPercentage] = useState(0);
   const [hasPlaybackError, setHasPlaybackError] = useState(false);
 
-  const assignMediaRef = useCallback(
-    (node: HTMLAudioElement | HTMLVideoElement | null) => {
-      mediaRef.current = node;
-    },
-    []
-  );
-
   useEffect(() => {
     consumedSecondsRef.current = new Set();
+    trackedMilestonesRef.current = new Set();
     lastPlaybackTimeRef.current = null;
     isSeekingRef.current = false;
+    hasStartedRef.current = false;
     hasCompletedRef.current = false;
+    hasTrackedErrorRef.current = false;
 
     setConsumedPercentage(0);
     setHasPlaybackError(false);
   }, [mediaType, src]);
 
-  const registerCompletion = useCallback(() => {
-    if (hasCompletedRef.current) {
-      return;
-    }
-
-    hasCompletedRef.current = true;
-
-    const parameters: AnalyticsParameters = {
+  const buildAnalyticsParameters = useCallback(
+    (
+      media: HTMLMediaElement,
+      percentage: number
+    ): AnalyticsParameters => ({
       media_type: mediaType,
       media_title: title,
-      completion_percentage: Math.round(completionThreshold * 100),
-    };
+      completion_percentage: percentage,
+      media_duration_seconds: Number.isFinite(media.duration)
+        ? Math.round(media.duration)
+        : 0,
+      media_consumed_seconds: consumedSecondsRef.current.size,
+      media_current_time_seconds: Math.round(media.currentTime),
+    }),
+    [mediaType, title]
+  );
 
-    trackUnifiedCustomEvent(
-      "codigo_cero_media_consumida",
-      parameters
-    );
+  const registerCompletion = useCallback(
+    (media: HTMLMediaElement, percentage: number) => {
+      if (hasCompletedRef.current) {
+        return;
+      }
 
-    if (mediaType === "audio") {
+      hasCompletedRef.current = true;
+
+      const parameters = buildAnalyticsParameters(media, percentage);
+
       trackUnifiedCustomEvent(
-        "codigo_cero_escuchado",
+        "codigo_cero_media_consumida",
         parameters
       );
-    }
 
-    onCompleted?.();
-  }, [completionThreshold, mediaType, onCompleted, title]);
+      trackUnifiedCustomEvent(
+        mediaType === "video"
+          ? "codigo_cero_visto"
+          : "codigo_cero_escuchado",
+        parameters
+      );
+
+      trackUnifiedCustomEvent(
+        "codigo_cero_media_completed",
+        parameters
+      );
+
+      onCompleted?.();
+    },
+    [buildAnalyticsParameters, mediaType, onCompleted]
+  );
+
+  function registerMilestones(
+    media: HTMLMediaElement,
+    percentage: number
+  ) {
+    for (const milestone of MEDIA_MILESTONES) {
+      if (
+        percentage < milestone ||
+        trackedMilestonesRef.current.has(milestone)
+      ) {
+        continue;
+      }
+
+      trackedMilestonesRef.current.add(milestone);
+
+      trackUnifiedCustomEvent(
+        `codigo_cero_media_${milestone}`,
+        buildAnalyticsParameters(media, milestone)
+      );
+    }
+  }
+
+  function updateProgress(
+    media: HTMLMediaElement,
+    percentage: number
+  ) {
+    const boundedPercentage = Math.min(
+      100,
+      Math.max(0, Math.round(percentage))
+    );
+
+    setConsumedPercentage(boundedPercentage);
+    onProgress?.(boundedPercentage);
+
+    registerMilestones(media, boundedPercentage);
+
+    if (
+      boundedPercentage >=
+      Math.round(completionThreshold * 100)
+    ) {
+      registerCompletion(media, boundedPercentage);
+    }
+  }
 
   function handleLoadedMetadata(
     event: SyntheticEvent<HTMLMediaElement>
@@ -100,11 +165,25 @@ export function TrackedMediaPlayer({
   }
 
   function handlePlay(event: SyntheticEvent<HTMLMediaElement>) {
-    lastPlaybackTimeRef.current = event.currentTarget.currentTime;
+    const media = event.currentTarget;
+
+    lastPlaybackTimeRef.current = media.currentTime;
+
+    if (hasStartedRef.current) {
+      return;
+    }
+
+    hasStartedRef.current = true;
+
+    trackUnifiedCustomEvent(
+      "codigo_cero_media_start",
+      buildAnalyticsParameters(media, 0)
+    );
   }
 
   function handlePause(event: SyntheticEvent<HTMLMediaElement>) {
-    lastPlaybackTimeRef.current = event.currentTarget.currentTime;
+    lastPlaybackTimeRef.current =
+      event.currentTarget.currentTime;
   }
 
   function handleSeeking() {
@@ -113,7 +192,8 @@ export function TrackedMediaPlayer({
 
   function handleSeeked(event: SyntheticEvent<HTMLMediaElement>) {
     isSeekingRef.current = false;
-    lastPlaybackTimeRef.current = event.currentTarget.currentTime;
+    lastPlaybackTimeRef.current =
+      event.currentTarget.currentTime;
   }
 
   function handleTimeUpdate(
@@ -164,20 +244,42 @@ export function TrackedMediaPlayer({
     }
 
     const percentage =
-      consumedSecondsRef.current.size / totalSeconds;
+      (consumedSecondsRef.current.size / totalSeconds) * 100;
 
-    setConsumedPercentage(
-      Math.min(100, Math.round(percentage * 100))
-    );
+    updateProgress(media, percentage);
+  }
 
-    if (percentage >= completionThreshold) {
-      registerCompletion();
+  function handleEnded(
+    event: SyntheticEvent<HTMLMediaElement>
+  ) {
+    const media = event.currentTarget;
+    const totalSeconds = Math.max(1, Math.ceil(media.duration));
+    const percentage =
+      (consumedSecondsRef.current.size / totalSeconds) * 100;
+
+    updateProgress(media, percentage);
+  }
+
+  function handleError(
+    event: SyntheticEvent<HTMLMediaElement>
+  ) {
+    setHasPlaybackError(true);
+
+    if (hasTrackedErrorRef.current) {
+      return;
     }
+
+    hasTrackedErrorRef.current = true;
+
+    trackUnifiedCustomEvent(
+      "codigo_cero_media_error",
+      buildAnalyticsParameters(event.currentTarget, consumedPercentage)
+    );
   }
 
   if (!src) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white px-6 py-12 text-center shadow-[0_24px_70px_rgba(39,31,23,0.10)]">
+      <div className="rounded-3xl border border-black/10 bg-white px-6 py-14 text-center shadow-[0_28px_80px_rgba(39,31,23,0.14)]">
         <p className="text-xs font-black uppercase tracking-[0.28em] text-[#a4793d]">
           Código Cero
         </p>
@@ -196,14 +298,14 @@ export function TrackedMediaPlayer({
 
   return (
     <div className="w-full">
-      <div className="overflow-hidden rounded-3xl border border-black/10 bg-white p-3 shadow-[0_24px_70px_rgba(39,31,23,0.12)]">
+      <div className="overflow-hidden rounded-3xl border border-black/10 bg-white p-3 shadow-[0_28px_80px_rgba(39,31,23,0.15)] sm:p-4">
         {mediaType === "video" ? (
           <div className="aspect-video overflow-hidden rounded-2xl bg-black">
             <video
-              ref={assignMediaRef}
               src={src}
               poster={poster}
               controls
+              controlsList="nodownload"
               playsInline
               preload="metadata"
               className="h-full w-full object-contain"
@@ -213,21 +315,22 @@ export function TrackedMediaPlayer({
               onSeeking={handleSeeking}
               onSeeked={handleSeeked}
               onTimeUpdate={handleTimeUpdate}
-              onError={() => setHasPlaybackError(true)}
+              onEnded={handleEnded}
+              onError={handleError}
             >
               Tu navegador no puede reproducir este vídeo.
             </video>
           </div>
         ) : (
-          <div className="rounded-2xl bg-[#f4ede4] px-5 py-7 md:px-8">
-            <p className="mb-5 text-center font-serif text-2xl text-[#17130f]">
+          <div className="rounded-2xl bg-[#f4ede4] px-5 py-8 md:px-8 md:py-10">
+            <p className="mb-6 text-center font-serif text-2xl text-[#17130f]">
               {title}
             </p>
 
             <audio
-              ref={assignMediaRef}
               src={src}
               controls
+              controlsList="nodownload"
               preload="metadata"
               className="w-full"
               onLoadedMetadata={handleLoadedMetadata}
@@ -236,7 +339,8 @@ export function TrackedMediaPlayer({
               onSeeking={handleSeeking}
               onSeeked={handleSeeked}
               onTimeUpdate={handleTimeUpdate}
-              onError={() => setHasPlaybackError(true)}
+              onEnded={handleEnded}
+              onError={handleError}
             >
               Tu navegador no puede reproducir este audio.
             </audio>
@@ -245,7 +349,11 @@ export function TrackedMediaPlayer({
       </div>
 
       <div className="mt-4 flex items-center justify-between gap-4 px-1 text-xs font-bold uppercase tracking-[0.16em] text-[#756759]">
-        <span>Progreso escuchado</span>
+        <span>
+          {mediaType === "video"
+            ? "Progreso reproducido"
+            : "Progreso escuchado"}
+        </span>
         <span>{consumedPercentage}%</span>
       </div>
 
