@@ -1,4 +1,4 @@
-﻿export type AnalyticsParameters = Record<
+export type AnalyticsParameters = Record<
   string,
   string | number | boolean | null | undefined
 >;
@@ -6,6 +6,7 @@
 type BrowserAnalyticsWindow = Window & {
   fbq?: (...args: unknown[]) => void;
   gtag?: (...args: unknown[]) => void;
+  dataLayer?: unknown[];
 };
 
 function cleanParameters(parameters: AnalyticsParameters = {}) {
@@ -54,11 +55,19 @@ export function trackGoogleAnalyticsEvent(
 ) {
   const analyticsWindow = getAnalyticsWindow();
 
-  if (!analyticsWindow?.gtag) {
+  if (!analyticsWindow) {
     return;
   }
 
-  analyticsWindow.gtag("event", eventName, cleanParameters(parameters));
+  const cleanedParameters = cleanParameters(parameters);
+
+  if (analyticsWindow.gtag) {
+    analyticsWindow.gtag("event", eventName, cleanedParameters);
+    return;
+  }
+
+  analyticsWindow.dataLayer = analyticsWindow.dataLayer || [];
+  analyticsWindow.dataLayer.push(["event", eventName, cleanedParameters]);
 }
 
 export function trackUnifiedCustomEvent(
