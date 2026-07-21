@@ -12,6 +12,29 @@ import { trackGoogleAnalyticsEvent } from "@/lib/analytics";
 const SCROLL_MILESTONES = [25, 50, 75, 90, 100] as const;
 const ACTIVE_TIME_MILESTONES = [15, 30, 60, 120, 180] as const;
 
+function resolveSectionName(element: HTMLElement) {
+  if (element.dataset.analyticsSection) {
+    return element.dataset.analyticsSection;
+  }
+
+  if (element instanceof HTMLVideoElement) {
+    return "codigo_cero_video_player";
+  }
+
+  if (element instanceof HTMLAudioElement) {
+    return "codigo_cero_audio_player";
+  }
+
+  if (
+    element instanceof HTMLAnchorElement &&
+    element.textContent?.trim().toLowerCase() === "siguiente paso"
+  ) {
+    return "codigo_cero_next_step_cta";
+  }
+
+  return element.id || "unknown";
+}
+
 export default function AdvancedPageAnalytics() {
   const pathname = usePathname();
   const [hasConsent, setHasConsent] = useState(false);
@@ -137,8 +160,7 @@ export default function AdvancedPageAnalytics() {
           }
 
           const element = entry.target as HTMLElement;
-          const sectionName =
-            element.dataset.analyticsSection || element.id || "unknown";
+          const sectionName = resolveSectionName(element);
 
           if (trackedSectionsRef.current.has(sectionName)) {
             continue;
@@ -157,7 +179,9 @@ export default function AdvancedPageAnalytics() {
     );
 
     document
-      .querySelectorAll<HTMLElement>("[data-analytics-section]")
+      .querySelectorAll<HTMLElement>(
+        "[data-analytics-section], video, audio, a[aria-disabled]"
+      )
       .forEach((element) => sectionObserver.observe(element));
 
     function sendExitSummary() {
