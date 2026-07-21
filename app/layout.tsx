@@ -26,6 +26,24 @@ export const metadata: Metadata = {
   ),
 };
 
+const consentBootstrapScript = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  var storedConsent = null;
+  try { storedConsent = localStorage.getItem('lily_analytics_consent'); } catch (error) {}
+  var consentValue = storedConsent === 'granted' ? 'granted' : 'denied';
+  gtag('consent', 'default', {
+    analytics_storage: consentValue,
+    ad_storage: consentValue,
+    ad_user_data: consentValue,
+    ad_personalization: consentValue,
+    wait_for_update: 500
+  });
+  gtag('set', 'ads_data_redaction', true);
+  gtag('set', 'url_passthrough', true);
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -37,6 +55,12 @@ export default function RootLayout({
 
   return (
     <html lang="es" className={`${manrope.variable} ${notoSerif.variable}`}>
+      <head>
+        <script
+          id="google-consent-default"
+          dangerouslySetInnerHTML={{ __html: consentBootstrapScript }}
+        />
+      </head>
       <body className="font-sans antialiased">
         <Suspense fallback={null}>
           <GoogleAnalytics
