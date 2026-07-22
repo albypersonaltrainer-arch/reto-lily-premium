@@ -141,3 +141,13 @@ body {
 .input-line:focus {
   border-bottom-color: #f2ca50;
 }
+
+#solicita-acceso button[type="submit"] {
+  background-color: #111111;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+}
+
+#solicita-acceso button[type="submit"]:hover:not(:disabled) {
+  background-color: #2a2118;
+  transform: translateY(-0.125rem);
+}

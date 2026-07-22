@@ -85,9 +85,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                4. Base legal
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">4. Base legal</h2>
               <p className="mt-4 leading-8">
                 El tratamiento de tus datos se basa en tu solicitud de acceso al
                 reto, la aceptación de los términos y condiciones, la gestión de
@@ -112,9 +110,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
               <h2 className="font-serif text-2xl text-champagne">
                 6. Comunicación a terceros
               </h2>
-              <p className="mt-4 leading-8">
-                No venderemos tus datos personales a terceros.
-              </p>
+              <p className="mt-4 leading-8">No venderemos tus datos personales a terceros.</p>
               <p className="mt-3 leading-8">
                 Podremos compartir datos estrictamente necesarios con proveedores
                 técnicos que permiten el funcionamiento de la página, el envío de
@@ -128,9 +124,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                7. Proveedores externos
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">7. Proveedores externos</h2>
               <p className="mt-4 leading-8">
                 Para prestar el servicio pueden intervenir proveedores externos
                 como plataformas de pago, servicios de email, alojamiento web,
@@ -144,9 +138,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                8. Derechos del usuario
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">8. Derechos del usuario</h2>
               <p className="mt-4 leading-8">
                 Puedes solicitar el acceso, rectificación, eliminación,
                 limitación u oposición al tratamiento de tus datos personales,
@@ -159,9 +151,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                9. Seguridad
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">9. Seguridad</h2>
               <p className="mt-4 leading-8">
                 Aplicamos medidas razonables para proteger la información
                 facilitada por los usuarios. No obstante, ningún sistema digital
@@ -170,9 +160,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                10. Cambios en esta política
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">10. Cambios en esta política</h2>
               <p className="mt-4 leading-8">
                 Lily Camarena podrá modificar esta política de privacidad para
                 adaptarla a cambios legales, técnicos o de funcionamiento. La
@@ -181,22 +169,11 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                11. Contacto
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">11. Contacto</h2>
               <p className="mt-4 leading-8">
                 Para cualquier consulta sobre privacidad o tratamiento de datos,
                 puedes escribirnos por WhatsApp.
               </p>
-
-              <a
-                href={copy.whatsapp.url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-6 inline-flex rounded border border-[#25D366]/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
-              >
-                Hablar por WhatsApp
-              </a>
             </section>
           </div>
         </div>

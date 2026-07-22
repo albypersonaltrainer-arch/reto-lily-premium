@@ -42,9 +42,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
 
           <div className="mt-10 space-y-9 text-left text-muted">
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                1. Información general
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">1. Información general</h2>
               <p className="mt-4 leading-8">
                 Este sitio web y el contenido relacionado con el reto “El
                 Código de la Abundancia” son propiedad de Lily Camarena.
@@ -56,9 +54,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                2. Objetivo del reto
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">2. Objetivo del reto</h2>
               <p className="mt-4 leading-8">
                 El reto “El Código de la Abundancia” tiene fines educativos, de
                 desarrollo personal y expansión de conciencia.
@@ -76,17 +72,13 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                3. Acceso y participación
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">3. Acceso y participación</h2>
               <p className="mt-4 leading-8">
                 Una vez realizada la aportación correspondiente y confirmada la
                 inscripción, el usuario recibirá acceso al reto mediante el canal
                 indicado por la organización.
               </p>
-              <p className="mt-3 leading-8">
-                El acceso es personal e intransferible.
-              </p>
+              <p className="mt-3 leading-8">El acceso es personal e intransferible.</p>
               <p className="mt-3 leading-8">
                 Queda prohibido compartir, distribuir, grabar, reproducir,
                 revender o utilizar comercialmente cualquier contenido del reto
@@ -95,9 +87,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                4. Aportaciones y pagos
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">4. Aportaciones y pagos</h2>
               <p className="mt-4 leading-8">
                 Las cantidades aportadas para acceder al reto son voluntarias y
                 representan el nivel de compromiso elegido por cada participante.
@@ -114,9 +104,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                5. Propiedad intelectual
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">5. Propiedad intelectual</h2>
               <p className="mt-4 leading-8">
                 Todo el contenido incluido en este reto, incluyendo textos,
                 vídeos, audios, ejercicios, nombre del programa, identidad
@@ -134,9 +122,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                6. Responsabilidad del usuario
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">6. Responsabilidad del usuario</h2>
               <p className="mt-4 leading-8">
                 El participante entiende y acepta que sus resultados, avances y
                 aplicación del contenido dependen exclusivamente de su implicación
@@ -157,9 +143,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                7. Limitación de responsabilidad
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">7. Limitación de responsabilidad</h2>
               <p className="mt-4 leading-8">
                 Lily Camarena no será responsable por decisiones personales,
                 financieras, emocionales o profesionales tomadas por el usuario a
@@ -172,9 +156,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                8. Testimonios y experiencias
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">8. Testimonios y experiencias</h2>
               <p className="mt-4 leading-8">
                 Los testimonios compartidos reflejan experiencias personales e
                 individuales de distintos participantes.
@@ -186,9 +168,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                9. Privacidad
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">9. Privacidad</h2>
               <p className="mt-4 leading-8">
                 La información proporcionada por los usuarios será tratada de
                 forma confidencial y utilizada únicamente para fines relacionados
@@ -202,9 +182,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                10. Comunicaciones
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">10. Comunicaciones</h2>
               <p className="mt-4 leading-8">
                 Al registrarte en el reto, aceptas recibir comunicaciones
                 relacionadas con el acceso, contenido, seguimiento e información
@@ -217,9 +195,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                11. Mayoría de edad
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">11. Mayoría de edad</h2>
               <p className="mt-4 leading-8">
                 La participación en este reto está dirigida exclusivamente a
                 personas mayores de 18 años.
@@ -227,9 +203,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                12. Derecho de admisión
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">12. Derecho de admisión</h2>
               <p className="mt-4 leading-8">
                 La organización se reserva el derecho de cancelar o limitar el
                 acceso a cualquier participante que incurra en faltas de respeto,
@@ -239,9 +213,7 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                13. Modificaciones
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">13. Modificaciones</h2>
               <p className="mt-4 leading-8">
                 La organización se reserva el derecho de modificar los presentes
                 términos y condiciones en cualquier momento para adaptarlos a
@@ -254,22 +226,12 @@ export default function LegalTermsPage({ params }: LegalTermsPageProps) {
             </section>
 
             <section>
-              <h2 className="font-serif text-2xl text-champagne">
-                14. Contacto
-              </h2>
+              <h2 className="font-serif text-2xl text-champagne">14. Contacto</h2>
               <p className="mt-4 leading-8">
                 Para cualquier duda o consulta relacionada con el reto, puedes
                 contactar a través del canal oficial de WhatsApp indicado en esta
                 página.
               </p>
-              <a
-                href={copy.whatsapp.url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-6 inline-flex rounded border border-[#25D366]/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
-              >
-                Hablar por WhatsApp
-              </a>
             </section>
           </div>
         </div>
