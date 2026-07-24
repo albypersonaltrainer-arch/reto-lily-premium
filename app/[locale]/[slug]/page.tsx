@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import { ChallengeLanding } from "@/components/ChallengeLanding";
+import { CodigoOrigenLanding } from "@/components/CodigoOrigenLanding";
 import { getChallenge, type Locale } from "@/config/challenge";
 import { getEditableChallengeCopy } from "@/lib/challengeSettings";
 
@@ -67,5 +68,9 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
 
   const challenge = await getEditableChallengeCopy(locale);
 
-  return <ChallengeLanding copy={challenge} />;
+  return locale === "es" ? (
+    <CodigoOrigenLanding copy={challenge} />
+  ) : (
+    <ChallengeLanding copy={challenge} />
+  );
 }
