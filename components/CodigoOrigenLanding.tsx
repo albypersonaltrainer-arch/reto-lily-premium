@@ -15,7 +15,7 @@ type Testimonial = {
   mediaUrl?: string;
 };
 
-const LOGO_SRC = "/lily-camarena-logo.png";
+const LOGO_SRC = "/lily-camarena-logo.svg";
 const PRICE = "$27";
 
 const FAQ = [
@@ -95,7 +95,7 @@ export function CodigoOrigenLanding({ copy }: { copy: ChallengeCopy }) {
       <header className="fixed top-0 z-50 w-full border-b border-black/10 bg-[#f7efe3]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-8">
           <a href="/es/codigo-origen" aria-label="Lily Camarena" className="flex items-center">
-            <Image src={LOGO_SRC} alt="Lily Camarena" width={180} height={70} className="h-12 w-auto object-contain" priority />
+            <Image src={LOGO_SRC} alt="Lily Camarena" width={180} height={180} className="h-14 w-14 object-contain md:h-16 md:w-16" priority />
           </a>
           <a href="#solicita-acceso" className="rounded bg-[#111111] px-5 py-3 text-[10px] font-black uppercase tracking-[0.22em] text-white transition hover:bg-[#2b2119]">
             Acceder al reto
@@ -122,8 +122,8 @@ export function CodigoOrigenLanding({ copy }: { copy: ChallengeCopy }) {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-black/10 bg-[#fffaf2]/80 p-8 shadow-[0_30px_90px_rgba(35,24,14,0.16)]">
-              <Image src={LOGO_SRC} alt="Lily Camarena" width={520} height={300} className="mx-auto h-52 w-full object-contain md:h-72" priority />
+            <div className="rounded-[2rem] border border-black/10 bg-[#fffaf2]/80 p-8 shadow-[0_30px_90px_rgba(35,24,14,0.16)] md:p-10">
+              <Image src={LOGO_SRC} alt="Lily Camarena" width={620} height={620} className="mx-auto h-72 w-full object-contain sm:h-80 md:h-[24rem]" priority />
               <div className="mt-8 border-t border-black/10 pt-6">
                 <p className="text-sm font-black uppercase tracking-[0.26em] text-[#b89452]">No es manifestación tradicional</p>
                 <p className="mt-4 text-lg leading-8 text-[#3e342a]">No va de visualizar mejor, repetir afirmaciones o aprender otra técnica. Va de observar desde dónde estás interpretando, decidiendo y creando tu realidad.</p>
@@ -215,7 +215,7 @@ export function CodigoOrigenLanding({ copy }: { copy: ChallengeCopy }) {
 
         <section className="px-6 py-14 md:py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[0.75fr_1.25fr]">
-            <div className="rounded-[2rem] border border-black/10 bg-[#fffaf2] p-8 shadow-[0_24px_70px_rgba(35,24,14,0.10)]"><Image src={LOGO_SRC} alt="Lily Camarena" width={500} height={280} className="mx-auto h-56 w-full object-contain" /></div>
+            <div className="rounded-[2rem] border border-black/10 bg-[#fffaf2] p-8 shadow-[0_24px_70px_rgba(35,24,14,0.10)]"><Image src={LOGO_SRC} alt="Lily Camarena" width={500} height={500} className="mx-auto h-64 w-full object-contain md:h-72" /></div>
             <div><SectionLabel>{copy.coach.name}</SectionLabel><h2 className="mt-5 font-serif text-4xl leading-tight tracking-[-0.03em] text-[#111111] md:text-6xl">{copy.coach.subtitle}</h2><p className="mt-6 text-xl leading-9 text-[#3e342a]">{copy.coach.text}</p></div>
           </div>
         </section>
@@ -236,7 +236,7 @@ export function CodigoOrigenLanding({ copy }: { copy: ChallengeCopy }) {
         <section className="px-6 pb-20 pt-6 md:pb-28"><div className="mx-auto max-w-4xl"><div className="text-center"><SectionLabel>FAQ</SectionLabel><h2 className="mt-5 font-serif text-4xl leading-tight tracking-[-0.03em] text-[#111111] md:text-6xl">Preguntas frecuentes</h2></div><div className="mt-10 overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffaf2] shadow-[0_24px_70px_rgba(35,24,14,0.10)]">{FAQ.map(([question, answer], index) => <details key={question} className="group border-b border-black/10 last:border-b-0" open={index === 0}><summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-6 py-6 text-left font-serif text-2xl leading-tight text-[#111111] marker:hidden md:px-8"><span>{question}</span><span aria-hidden="true" className="text-3xl font-light text-[#b89452] transition-transform duration-200 group-open:rotate-45">+</span></summary><div className="px-6 pb-7 text-base leading-8 text-[#5b5046] md:px-8 md:text-lg"><p>{answer}</p></div></details>)}</div></div></section>
       </main>
 
-      <footer className="border-t border-white/10 bg-[#111111] px-6 py-10 text-white"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-center md:flex-row"><div className="flex items-center gap-3"><Image src={LOGO_SRC} alt="Lily Camarena" width={160} height={54} className="h-10 w-auto object-contain brightness-0 invert" /></div><p className="text-xs uppercase tracking-[0.22em] text-white/55">{copy.footer.legal}</p><nav className="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-[0.22em] text-white/65"><a href="/es/legal/privacidad" className="transition hover:text-white">Privacidad</a><a href="/es/legal/terminos" className="transition hover:text-white">Términos</a><a href={copy.whatsapp.url} target="_blank" rel="noreferrer" className="transition hover:text-white">Contacto</a></nav></div></footer>
+      <footer className="border-t border-white/10 bg-[#111111] px-6 py-10 text-white"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-center md:flex-row"><div className="flex items-center gap-3"><Image src={LOGO_SRC} alt="Lily Camarena" width={160} height={160} className="h-14 w-14 object-contain brightness-0 invert" /></div><p className="text-xs uppercase tracking-[0.22em] text-white/55">{copy.footer.legal}</p><nav className="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-[0.22em] text-white/65"><a href="/es/legal/privacidad" className="transition hover:text-white">Privacidad</a><a href="/es/legal/terminos" className="transition hover:text-white">Términos</a><a href={copy.whatsapp.url} target="_blank" rel="noreferrer" className="transition hover:text-white">Contacto</a></nav></div></footer>
     </div>
   );
 }
